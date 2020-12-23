@@ -2,7 +2,11 @@ defmodule Day2 do
 	def between_range(num, min, max) do
 		num >= min and num <= max
 	end
-
+	@doc """
+	## Examples
+		iex> Day2.part1
+		416
+	"""
 	def part1 do
 		Input.read(2)
 		|> Enum.map(fn line -> 
@@ -19,6 +23,11 @@ defmodule Day2 do
 		|> Enum.count
 	end
 
+	@doc """
+	## Examples
+		iex> Day2.part2
+		688
+	"""
 	def part2 do
 		Input.read(2)
 		|> Enum.map(fn line -> 

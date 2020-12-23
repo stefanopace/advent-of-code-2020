@@ -1,4 +1,9 @@
 defmodule Day1 do
+	@doc """
+	## Examples
+		iex> Day1.part1
+		776064
+	"""
 	def part1 do
 		input = 
 			Input.read(1)
@@ -9,6 +14,12 @@ defmodule Day1 do
 		x * y
 	end
 
+	@doc """
+	## Examples
+		#test too slow
+		#iex> Day1.part2
+		#6964490
+	"""
 	def part2 do
 		input = 
 			Input.read(1)
