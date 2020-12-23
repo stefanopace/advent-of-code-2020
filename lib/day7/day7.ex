@@ -48,9 +48,22 @@ defmodule Day7 do
 	@doc """
 	## Examples
 		iex> Day7.part2
-		:error
+		24867
 	"""
 	def part2 do
-		:error
+		Input.read(7)
+		|> Enum.map(&decode_rule/1)
+		|> count_bags("shiny gold")
+		|> Kernel.-(1)
+	end
+
+	defp count_bags(rules_list, color_name) do
+		{_color, rules} = rules_list |> Enum.find(fn {col, _rul} -> col == color_name end)
+		case rules do
+			[] -> 1
+			rules -> Enum.map(rules, fn {count, in_color} -> 
+				count * count_bags(rules_list, in_color) 
+			end) |> Enum.sum |> Kernel.+(1)
+		end
 	end
 end
