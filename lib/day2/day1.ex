@@ -18,4 +18,20 @@ defmodule Day2 do
 		end)
 		|> Enum.count
 	end
+
+	def part2 do
+		Input.read(2)
+		|> Enum.map(fn line -> 
+			[_all, first, second, char, password] = Regex.run(~r"(.*)-(.*) (.): (.*)", line)
+			{first, _rest} = Integer.parse(first)
+			{second, _rest} = Integer.parse(second)
+			{first, second, char, password}
+		end)
+		|> Enum.filter(fn {first, second, char, password} -> 
+			[String.at(password, first - 1), String.at(password, second - 1)]
+			|> Enum.count(&(&1 == char))
+			|> Kernel.==(1)
+		end)
+		|> Enum.count
+	end
 end
