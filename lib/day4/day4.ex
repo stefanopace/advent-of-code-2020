@@ -1,6 +1,6 @@
 defmodule Day4 do
 
-	def parse_documents(lines) do
+	defp parse_documents(lines) do
 		lines
 		|> Enum.chunk_while([], 
 			fn element, acc -> if element != "" do
@@ -22,9 +22,40 @@ defmodule Day4 do
 		end )
 	end
 
-	def valid(doc) do
+	defp required_fields_are_present(doc) do
 		[:byr, :iyr, :eyr, :hgt, :hcl, :ecl, :pid]
 		|> Enum.all?(fn field -> Keyword.has_key?(doc, field) end)
+	end
+
+	defp between(num, min, max) do
+		{num, _rest} = Integer.parse(num, 10)
+		min <= num and num <= max
+	end
+
+	defp field_is_valid({:byr, val}), do: between(val, 1920, 2002)
+	defp field_is_valid({:iyr, val}), do: between(val, 2010, 2020)
+	defp field_is_valid({:eyr, val}), do: between(val, 2020, 2030)
+	defp field_is_valid({:hgt, val}) do
+		{val, unit} = Integer.parse(val, 10)
+		case unit do
+			"cm" -> 150 <= val and val <= 193
+			"in" -> 59 <= val and val <= 76
+			_ -> false
+		end
+	end
+	defp field_is_valid({:hcl, val}) do
+		Regex.match?(~r"#[0-9a-f]{6}", val)
+	end
+	defp field_is_valid({:ecl, val}) do
+		Enum.member?(["amb","blu","brn","gry","grn","hzl","oth"], val)
+	end
+	defp field_is_valid({:pid, val}) do
+		Regex.match?(~r"[0-9]{9}", val)
+	end
+	defp field_is_valid({:cid, _val}), do: true
+
+	defp fields_are_valids(doc) do
+		Enum.all?(doc, &field_is_valid/1)
 	end
 
 	@doc """
@@ -35,8 +66,22 @@ defmodule Day4 do
 	def part1 do
 		Input.read(4)
 		|> parse_documents
-		|> Enum.filter(&valid/1)
+		|> Enum.filter(&required_fields_are_present/1)
 		|> Enum.count
 	end
 	
+	@doc """
+	## Examples
+		iex> Day4.part2
+		157
+	"""
+	def part2 do
+		Input.read(4)
+		|> parse_documents
+		|> Enum.filter(&required_fields_are_present/1)
+		|> Enum.filter(&fields_are_valids/1)
+		|> IO.inspect
+		|> Enum.count
+	end
+
 end

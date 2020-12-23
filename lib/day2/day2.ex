@@ -1,5 +1,5 @@
 defmodule Day2 do
-	def between_range(num, min, max) do
+	defp between_range(num, min, max) do
 		num >= min and num <= max
 	end
 	@doc """

@@ -1,5 +1,5 @@
 defmodule Day3 do
-	def count_trees(horizontale_move, vertical_move) do
+	defp count_trees(horizontale_move, vertical_move) do
 		Input.read(3)
 		|> Enum.take_every(vertical_move)
 		|> Enum.reduce(
