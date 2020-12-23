@@ -16,10 +16,15 @@ defmodule Day6 do
 
 	@doc """
 	## Examples
-		iex> Day6.part1
-		:error
+		iex> Day6.part2
+		3178
 	"""
 	def part2 do
-		
+		Input.read(6)
+		|> Input.split_on_blank_lines
+		|> Enum.map(fn group -> group |> Enum.map(fn resp -> resp |> String.graphemes |> MapSet.new end) end)
+		|> Enum.map(fn group -> group |> Enum.reduce(fn resp, acc -> MapSet.intersection(resp, acc) end) end)
+		|> Enum.map(&Enum.count/1)
+		|> Enum.sum
 	end
 end
