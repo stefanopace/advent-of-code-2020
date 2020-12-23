@@ -44,13 +44,13 @@ defmodule Day4 do
 		end
 	end
 	defp field_is_valid({:hcl, val}) do
-		Regex.match?(~r"#[0-9a-f]{6}", val)
+		Regex.match?(~r"^#[0-9a-f]{6}$", val)
 	end
 	defp field_is_valid({:ecl, val}) do
 		Enum.member?(["amb","blu","brn","gry","grn","hzl","oth"], val)
 	end
 	defp field_is_valid({:pid, val}) do
-		Regex.match?(~r"[0-9]{9}", val)
+		Regex.match?(~r"^[0-9]{9}$", val)
 	end
 	defp field_is_valid({:cid, _val}), do: true
 
@@ -73,14 +73,13 @@ defmodule Day4 do
 	@doc """
 	## Examples
 		iex> Day4.part2
-		157
+		156
 	"""
 	def part2 do
 		Input.read(4)
 		|> parse_documents
 		|> Enum.filter(&required_fields_are_present/1)
 		|> Enum.filter(&fields_are_valids/1)
-		|> IO.inspect
 		|> Enum.count
 	end
 
