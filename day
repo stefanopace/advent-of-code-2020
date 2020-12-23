@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+if [ -z "$1" ]; then
+	echo "error"
+fi
+
+mkdir ./lib/day$1
+touch ./lib/day$1/input
+cat << EOF  > ./lib/day$1/day$1.ex
+defmodule Day$1 do
+	@doc """
+	## Examples
+		iex> Day$1.part1
+		:error
+	"""
+	def part1 do
+		:todo
+	end
+
+	@doc """
+	## Examples
+		#iex> Day$1.part2
+		:error
+	"""
+	def part2 do
+		:error
+	end
+end
+EOF
+
+sed -i "s|end|  doctest Day$1\nend|" ./test/advent_of_code2020_test.exs
