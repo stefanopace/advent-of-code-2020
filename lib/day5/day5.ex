@@ -12,6 +12,20 @@ defmodule Day5 do
 		|> elem(2)
 	end
 
+	@doc """
+	## Examples
+		iex> Day5.part2
+		522
+	"""
+	def part2 do
+		Input.read(5)
+		|> Enum.map(&decode/1)
+		|> Enum.sort_by(fn {_row, _col, id, _code} -> id end)
+		|> Enum.chunk_every(2, 1, :discard)
+		|> Enum.find(fn [{_, _, l, _}, {_, _, r, _}] -> r - l != 1 end)
+		|> (fn [{_, _, l, _}, {_, _, _, _}] -> l + 1 end).()
+	end
+
 	defp decode(code) do
 		{row_encoded, col_encoded} = String.split_at(code, 7)
 		row = 
