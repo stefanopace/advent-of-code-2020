@@ -16,9 +16,7 @@ defmodule Day9 do
 	end
 
 	defp is_sum_of_two(number, list) do
-		for x <- list, y <- list do
-			{x, y}
-		end
+		(for x <- list, y <- list, do: {x, y})
 		|> Enum.filter(fn {x, y} -> x != y end)
 		|> Enum.any?(fn {x, y} -> x + y == number end)
 	end
