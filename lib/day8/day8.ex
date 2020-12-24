@@ -28,9 +28,37 @@ defmodule Day8 do
 	@doc """
 	## Examples
 		iex> Day8.part2
-		:error
+		1543
 	"""
 	def part2 do
-		:error
+		Input.read(8)
+		|> Enum.map(&decode_instruction/1)
+		|> traverse(%{cur: 0, acc: 0, fixed: false})
 	end
+
+	defp traverse(program, %{cur: cur, acc: acc, fixed: fixed}) do
+		if cur == length(program) do
+			acc
+		else
+			case List.pop_at(program, cur) do
+				{{_, _, true}, _rest} -> :wrong_path
+				{{:acc, val, _}, _rest} -> traverse(List.replace_at(program, cur, {:acc, val, true}), %{cur: cur + 1, acc: acc + val, fixed: fixed})
+				{{:jmp, val, _}, _rest} ->
+					result = traverse(List.replace_at(program, cur, {:jpm, val, true}), %{cur: cur + val, acc: acc, fixed: fixed})
+					if fixed or result != :wrong_path do
+						result
+					else
+						traverse(List.replace_at(program, cur, {:nop, val, true}), %{cur: cur + 1, acc: acc, fixed: true})
+					end
+				{{:nop, val, _}, _rest} ->
+					result = traverse(List.replace_at(program, cur, {:nop, val, true}), %{cur: cur + 1, acc: acc, fixed: fixed})
+					if fixed or result != :wrong_path do
+						result
+					else
+						traverse(List.replace_at(program, cur, {:jmp, val, true}), %{cur: cur + val, acc: acc, fixed: true})
+					end
+			end
+		end
+	end
+
 end
