@@ -11,11 +11,11 @@ defmodule Day8 do
 	end
 
 	defp find_loop(program, %{cur: cur, acc: acc}) do
-		case List.pop_at(program, cur) do
-			{{_, _, true}, _rest} -> acc
-			{{:jmp, val, _}, _rest} -> find_loop(mark_as_visited(program, cur), %{cur: cur + val, acc: acc})
-			{{:acc, val, _}, _rest} -> find_loop(mark_as_visited(program, cur), %{cur: cur + 1, acc: acc + val})
-			{{:nop, _val, _}, _rest} -> find_loop(mark_as_visited(program, cur), %{cur: cur + 1, acc: acc})
+		case program |> instruction_at(cur) do
+			{_, _, true} -> acc
+			{:jmp, val, _} -> find_loop(mark_as_visited(program, cur), %{cur: cur + val, acc: acc})
+			{:acc, val, _} -> find_loop(mark_as_visited(program, cur), %{cur: cur + 1, acc: acc + val})
+			{:nop, _val, _} -> find_loop(mark_as_visited(program, cur), %{cur: cur + 1, acc: acc})
 		end
 	end
 
@@ -37,20 +37,24 @@ defmodule Day8 do
 	end
 
 	defp traverse(program, %{cur: cur, acc: acc, fixed: fixed}) do
-		if cur == length(program) do
-			acc
-		else
-			case List.pop_at(program, cur) do
-				{{_, _, true}, _rest} -> :wrong_path
-				{{cmd, val, _}, _rest} ->
-					traverse(mark_as_visited(program, cur), next_state(cmd, val, cur, acc, fixed))
-					|> case do
-						result when cmd == :acc -> result
-						:wrong_path when not fixed -> traverse(mark_as_visited(program, cur), swap_instructions(cmd, val, cur, acc, true))
-						result -> result
-					end
-			end
+		case length(program) do
+			^cur -> acc
+			_ -> case program |> instruction_at(cur) do
+					{_, _, true} -> :wrong_path
+					{cmd, val, _} ->
+						traverse(mark_as_visited(program, cur), next_state(cmd, val, cur, acc, fixed))
+						|> case do
+							result when cmd == :acc -> result
+							:wrong_path when not fixed -> traverse(mark_as_visited(program, cur), swap_instructions(cmd, val, cur, acc, true))
+							result -> result
+						end
+				end
 		end
+	end
+
+	defp instruction_at(program, cursor) do
+		{cmd, _rest} = List.pop_at(program, cursor)
+		cmd
 	end
 
 	defp next_state(cmd, val, cur, acc, fixed) do
