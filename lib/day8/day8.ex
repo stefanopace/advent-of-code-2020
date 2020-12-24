@@ -43,19 +43,17 @@ defmodule Day8 do
 			case List.pop_at(program, cur) do
 				{{_, _, true}, _rest} -> :wrong_path
 				{{:acc, val, _}, _rest} -> traverse(List.replace_at(program, cur, {:acc, val, true}), %{cur: cur + 1, acc: acc + val, fixed: fixed})
-				{{:jmp, val, _}, _rest} ->
-					result = traverse(List.replace_at(program, cur, {:jpm, val, true}), %{cur: cur + val, acc: acc, fixed: fixed})
+				{{cmd, val, _}, _rest} ->
+					result = traverse(
+						List.replace_at(program, cur, {cmd, val, true}), 
+						%{cur: cur + (if cmd == :jmp, do: val, else: 1), acc: acc, fixed: fixed}
+					)
 					if fixed or result != :wrong_path do
 						result
 					else
-						traverse(List.replace_at(program, cur, {:nop, val, true}), %{cur: cur + 1, acc: acc, fixed: true})
-					end
-				{{:nop, val, _}, _rest} ->
-					result = traverse(List.replace_at(program, cur, {:nop, val, true}), %{cur: cur + 1, acc: acc, fixed: fixed})
-					if fixed or result != :wrong_path do
-						result
-					else
-						traverse(List.replace_at(program, cur, {:jmp, val, true}), %{cur: cur + val, acc: acc, fixed: true})
+						traverse(
+							List.replace_at(program, cur, {cmd, val, true}), 
+							%{cur: cur + (if cmd == :jmp, do: 1, else: val), acc: acc, fixed: true})
 					end
 			end
 		end
