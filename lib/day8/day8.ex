@@ -42,10 +42,10 @@ defmodule Day8 do
 		else
 			case List.pop_at(program, cur) do
 				{{_, _, true}, _rest} -> :wrong_path
-				{{:acc, val, _}, _rest} -> traverse(mark_as_visited(program, cur), next_state(:acc, val, cur, acc, fixed))
 				{{cmd, val, _}, _rest} ->
 					traverse(mark_as_visited(program, cur), next_state(cmd, val, cur, acc, fixed))
 					|> case do
+						result when cmd == :acc -> result
 						:wrong_path when not fixed -> traverse(mark_as_visited(program, cur), swap_instructions(cmd, val, cur, acc, true))
 						result -> result
 					end
