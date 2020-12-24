@@ -13,9 +13,9 @@ defmodule Day8 do
 	defp find_loop(program, %{cur: cur, acc: acc}) do
 		case List.pop_at(program, cur) do
 			{{_, _, true}, _rest} -> acc
-			{{:jmp, val, _}, _rest} -> find_loop(List.replace_at(program, cur, {:jpm, val, true}), %{cur: cur + val, acc: acc})
-			{{:acc, val, _}, _rest} -> find_loop(List.replace_at(program, cur, {:acc, val, true}), %{cur: cur + 1, acc: acc + val})
-			{{:nop, val, _}, _rest} -> find_loop(List.replace_at(program, cur, {:nop, val, true}), %{cur: cur + 1, acc: acc})
+			{{:jmp, val, _}, _rest} -> find_loop(mark_as_visited(program, cur), %{cur: cur + val, acc: acc})
+			{{:acc, val, _}, _rest} -> find_loop(mark_as_visited(program, cur), %{cur: cur + 1, acc: acc + val})
+			{{:nop, _val, _}, _rest} -> find_loop(mark_as_visited(program, cur), %{cur: cur + 1, acc: acc})
 		end
 	end
 
@@ -42,21 +42,35 @@ defmodule Day8 do
 		else
 			case List.pop_at(program, cur) do
 				{{_, _, true}, _rest} -> :wrong_path
-				{{:acc, val, _}, _rest} -> traverse(List.replace_at(program, cur, {:acc, val, true}), %{cur: cur + 1, acc: acc + val, fixed: fixed})
+				{{:acc, val, _}, _rest} -> traverse(mark_as_visited(program, cur), next_state(:acc, val, cur, acc, fixed))
 				{{cmd, val, _}, _rest} ->
-					result = traverse(
-						List.replace_at(program, cur, {cmd, val, true}), 
-						%{cur: cur + (if cmd == :jmp, do: val, else: 1), acc: acc, fixed: fixed}
-					)
-					if fixed or result != :wrong_path do
-						result
-					else
-						traverse(
-							List.replace_at(program, cur, {cmd, val, true}), 
-							%{cur: cur + (if cmd == :jmp, do: 1, else: val), acc: acc, fixed: true})
+					traverse(mark_as_visited(program, cur), next_state(cmd, val, cur, acc, fixed))
+					|> case do
+						:wrong_path when not fixed -> traverse(mark_as_visited(program, cur), swap_instructions(cmd, val, cur, acc, true))
+						result -> result
 					end
 			end
 		end
+	end
+
+	defp next_state(cmd, val, cur, acc, fixed) do
+		%{
+			cur: cur + (if cmd == :jmp, do: val, else: 1), 
+			acc: acc + (if cmd == :acc, do: val, else: 0),
+			fixed: fixed
+		}
+	end
+
+	defp swap_instructions(cmd, val, cur, acc, fixed) do
+		%{
+			cur: cur + (if cmd == :jmp, do: 1, else: val), 
+			acc: acc, 
+			fixed: fixed
+		}
+	end
+
+	defp mark_as_visited(program, index) do
+		List.replace_at(program, index, {nil, nil, true})
 	end
 
 end
