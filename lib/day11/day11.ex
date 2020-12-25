@@ -14,14 +14,13 @@ defmodule Day11 do
 	@doc """
 	## Examples
 		iex> Day11.part2
-		:error
+		2057
 	"""
 	def part2 do
-		# Input.read(11)
-		# |> to_matrix
-		# |> stabilize
-		# |> count_occupied_seats
-		:error
+		Input.read(11)
+		|> to_matrix
+		|> stabilize(&apply_part2_rules/4)
+		|> count_occupied_seats
 	end
 
 	defp count_occupied_seats(seats) do
@@ -103,7 +102,7 @@ defmodule Day11 do
 			?. -> ?.
 			?L -> 
 				[{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1},]
-				|> Enum.map(fn {i_shift, j_shift} -> seats[i + i_shift][j + j_shift] end)
+				|> Enum.map(fn direction -> first_seat_status_following_direction(seats, i, j, direction) end)
 				|> Enum.count(&seat_is_occupied/1)
 				|> case do
 					count when count == 0 -> ?#
@@ -111,12 +110,19 @@ defmodule Day11 do
 				end
 			?# ->
 				[{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1},]
-				|> Enum.map(fn {i_shift, j_shift} -> seats[i + i_shift][j + j_shift] end)
+				|> Enum.map(fn direction -> first_seat_status_following_direction(seats, i, j, direction) end)
 				|> Enum.count(&seat_is_occupied/1)
 				|> case do
-					count when count >= 4 -> ?L
+					count when count >= 5 -> ?L
 					_ -> ?#
 				end
+		end
+	end
+
+	defp first_seat_status_following_direction(seats, i, j, {i_shift, j_shift}) do
+		case seats[i + i_shift][j + j_shift] do
+			?. -> first_seat_status_following_direction(seats, i + i_shift, j + j_shift, {i_shift, j_shift})
+			status -> status
 		end
 	end
 
