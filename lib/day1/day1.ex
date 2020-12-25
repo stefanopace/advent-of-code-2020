@@ -16,9 +16,8 @@ defmodule Day1 do
 
 	@doc """
 	## Examples
-		#test too slow
-		#iex> Day1.part2
-		#6964490
+		iex> Day1.part2
+		6964490
 	"""
 	def part2 do
 		input = 

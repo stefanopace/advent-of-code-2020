@@ -2,12 +2,22 @@ defmodule Day11 do
 	@doc """
 	## Examples
 		iex> Day11.part1
-		:error
+		2303
 	"""
 	def part1 do
 		Input.read(11)
 		|> to_matrix
 		|> stabilize
+		|> count_occupied_seats
+	end
+
+	defp count_occupied_seats(seats) do
+		seats 
+		|> Map.values
+		|> Enum.map(&Map.values/1)
+		|> List.flatten
+		|> Enum.count(&(&1 == ?#))
+		
 	end
 
 	defp to_matrix(input) do
@@ -29,15 +39,23 @@ defmodule Day11 do
 	defp stabilize(seats) do
 		seats
 		|> compute_next_seats_status
-		# |> compare_with_previous_status
-		# |> case do
-		# 	{:same, _new, _old} -> seats
-		# 	{:different, new, _old} -> stabilize(new)
-		# end
+		|> compare_with_previous_status
+		|> case do
+		 	{:same, _old, _new} -> seats
+		 	{:different, _old, new} -> stabilize(new)
+		end
+	end
+
+	defp compare_with_previous_status({prev, current}) do
+		if Map.equal?(prev, current) do
+			{:same, prev, current}
+		else
+			{:different, prev, current}
+		end
 	end
 
 	defp compute_next_seats_status(seats) do
-		seats |> Enum.map(fn {i, row} -> 
+		{seats, seats |> Enum.map(fn {i, row} -> 
 			{
 				i, row |> Enum.map(fn {j, seat} ->
 					{ j , case seat do 
@@ -62,7 +80,7 @@ defmodule Day11 do
 					}
 				end) |> Map.new
 			}
-		end) |> Map.new
+		end) |> Map.new}
 	end
 
 	defp seat_is_occupied(seat) do
