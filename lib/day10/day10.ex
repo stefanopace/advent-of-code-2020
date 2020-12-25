@@ -25,9 +25,45 @@ defmodule Day10 do
 	@doc """
 	## Examples
 		iex> Day10.part2
-		:error
+		113387824750592
 	"""
 	def part2 do
-		:error
+		Input.read(10)
+		|> Enum.map(fn strnum -> Integer.parse(strnum) |> elem(0) end)
+		|> (fn adapters -> [0] ++ adapters ++ [Enum.max(adapters) + 3] end).()
+		|> Enum.sort
+		|> Enum.chunk_every(2, 1, :discard)
+		|> Enum.map(fn [x, y] -> y - x end)
+		|> Enum.chunk_by(&(&1))
+		|> Enum.filter(fn group -> Enum.member?(group, 1) end)
+		|> Enum.map(&Enum.count/1)
+		|> Enum.map(fn count -> 
+			case count do
+				1 -> 1
+				2 -> 2
+				3 -> 4
+				4 -> 7
+			end 
+		end)
+		|> Enum.reduce(fn x, acc -> x * acc end)
 	end
 end
+
+# 0 1 4
+
+# 0 1 2 5
+# 0   2 5
+
+# 0 1 2 3 6
+# 0   2 3 6
+# 0 1   3 6
+# 0     3 6
+
+# 0 1 2 3 4 7
+# 0   2 3 4 7
+# 0 1   3 4 7
+# 0 1 2   4 7
+# 0     3 4 7
+# 0 1     4 7
+# 0   2   4 7
+
