@@ -6,6 +6,26 @@ defmodule Day12 do
 	"""
 	def part1 do
 		Input.read(12)
+		|> decode_instructions
+		|> navigate({90, {0, 0}})
+		|> manhattan_distance
+	end
+
+	@doc """
+	## Examples
+		iex> Day12.part2
+		:error
+	"""
+	def part2 do
+		:error
+	end
+
+	defp manhattan_distance({x, y}) do
+		abs(x) + abs(y)
+	end
+
+	defp decode_instructions(encoded) do
+		encoded
 		|> Enum.map(fn encoded -> Regex.run(~r/([A-Z])([0-9]+)/, encoded) end)
 		|> Enum.map(fn [_, cmd, strval] ->
 			{val, _} = Integer.parse(strval)
@@ -20,8 +40,6 @@ defmodule Day12 do
 				val
 			} 
 		end)
-		|> navigate({90, {0, 0}})
-		|> (fn {x, y} -> abs(x) + abs(y) end).()
 	end
 
 	defp navigate(instructions, {direction, {x, y}}) do
@@ -51,14 +69,5 @@ defmodule Day12 do
 			d when d < 0 -> rotate(:right, d, 360)
 			d -> d
 		end
-	end
-
-	@doc """
-	## Examples
-		iex> Day12.part2
-		:error
-	"""
-	def part2 do
-		:error
 	end
 end
