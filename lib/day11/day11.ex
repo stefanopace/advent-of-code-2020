@@ -7,8 +7,21 @@ defmodule Day11 do
 	def part1 do
 		Input.read(11)
 		|> to_matrix
-		|> stabilize
+		|> stabilize(&apply_part1_rules/4)
 		|> count_occupied_seats
+	end
+
+	@doc """
+	## Examples
+		iex> Day11.part2
+		:error
+	"""
+	def part2 do
+		# Input.read(11)
+		# |> to_matrix
+		# |> stabilize
+		# |> count_occupied_seats
+		:error
 	end
 
 	defp count_occupied_seats(seats) do
@@ -17,7 +30,6 @@ defmodule Day11 do
 		|> Enum.map(&Map.values/1)
 		|> List.flatten
 		|> Enum.count(&(&1 == ?#))
-		
 	end
 
 	defp to_matrix(input) do
@@ -36,13 +48,13 @@ defmodule Day11 do
 		|> Map.new
 	end
 
-	defp stabilize(seats) do
+	defp stabilize(seats, rules_to_apply) do
 		seats
-		|> compute_next_seats_status
+		|> compute_next_seats_status(rules_to_apply)
 		|> compare_with_previous_status
 		|> case do
 		 	{:same, _old, _new} -> seats
-		 	{:different, _old, new} -> stabilize(new)
+		 	{:different, _old, new} -> stabilize(new, rules_to_apply)
 		end
 	end
 
@@ -54,45 +66,68 @@ defmodule Day11 do
 		end
 	end
 
-	defp compute_next_seats_status(seats) do
-		{seats, seats |> Enum.map(fn {i, row} -> 
-			{
-				i, row |> Enum.map(fn {j, seat} ->
-					{ j , case seat do 
-							?. -> ?.
-							?L -> 
-								[{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1},]
-								|> Enum.map(fn {i_shift, j_shift} -> seats[i + i_shift][j + j_shift] end)
-								|> Enum.count(&seat_is_occupied/1)
-								|> case do
-									count when count == 0 -> ?#
-									_ -> ?L
-								end
-							?# ->
-								[{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1},]
-								|> Enum.map(fn {i_shift, j_shift} -> seats[i + i_shift][j + j_shift] end)
-								|> Enum.count(&seat_is_occupied/1)
-								|> case do
-									count when count >= 4 -> ?L
-									_ -> ?#
-								end
-						end
-					}
-				end) |> Map.new
-			}
-		end) |> Map.new}
+	defp map_each_seat(seats, map_function) do
+		seats |> Enum.map(fn {i, row} -> 
+			{ i, row |> Enum.map(
+				fn {j, seat} ->
+					{j, map_function.(seats, i, j, seat)}
+				end
+			) |> Map.new}
+		end) |> Map.new
+	end
+
+	defp apply_part1_rules(seats, i, j, seat) do
+		case seat do 
+			?. -> ?.
+			?L -> 
+				[{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1},]
+				|> Enum.map(fn {i_shift, j_shift} -> seats[i + i_shift][j + j_shift] end)
+				|> Enum.count(&seat_is_occupied/1)
+				|> case do
+					count when count == 0 -> ?#
+					_ -> ?L
+				end
+			?# ->
+				[{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1},]
+				|> Enum.map(fn {i_shift, j_shift} -> seats[i + i_shift][j + j_shift] end)
+				|> Enum.count(&seat_is_occupied/1)
+				|> case do
+					count when count >= 4 -> ?L
+					_ -> ?#
+				end
+		end
+	end
+
+	defp apply_part2_rules(seats, i, j, seat) do
+		case seat do 
+			?. -> ?.
+			?L -> 
+				[{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1},]
+				|> Enum.map(fn {i_shift, j_shift} -> seats[i + i_shift][j + j_shift] end)
+				|> Enum.count(&seat_is_occupied/1)
+				|> case do
+					count when count == 0 -> ?#
+					_ -> ?L
+				end
+			?# ->
+				[{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1},]
+				|> Enum.map(fn {i_shift, j_shift} -> seats[i + i_shift][j + j_shift] end)
+				|> Enum.count(&seat_is_occupied/1)
+				|> case do
+					count when count >= 4 -> ?L
+					_ -> ?#
+				end
+		end
+	end
+
+	defp compute_next_seats_status(seats, rules_to_apply) do
+		{
+			seats,
+			seats |> map_each_seat(rules_to_apply)
+		}
 	end
 
 	defp seat_is_occupied(seat) do
 		seat == ?#
-	end
-
-	@doc """
-	## Examples
-		iex> Day11.part2
-		:error
-	"""
-	def part2 do
-		:error
 	end
 end
