@@ -14,10 +14,13 @@ defmodule Day12 do
 	@doc """
 	## Examples
 		iex> Day12.part2
-		:error
+		58637
 	"""
 	def part2 do
-		:error
+		Input.read(12)
+		|> decode_instructions
+		|> navigate_waypoint({{10, 1}, {0, 0}})
+		|> manhattan_distance
 	end
 
 	defp manhattan_distance({x, y}) do
@@ -40,6 +43,33 @@ defmodule Day12 do
 				val
 			} 
 		end)
+	end
+
+	defp navigate_waypoint(instructions, {{wx, wy}, {x, y}}) do
+		case instructions do
+			[] -> {x, y}
+			[current_instruction | rest] ->
+				case current_instruction do
+					{0, val} -> navigate_waypoint(rest, {{wx, wy + val}, {x, y}})
+					{90, val} -> navigate_waypoint(rest, {{wx + val, wy}, {x, y}})
+					{180, val} -> navigate_waypoint(rest, {{wx, wy - val}, {x, y}})
+					{270, val} -> navigate_waypoint(rest, {{wx - val, wy}, {x, y}})
+					{"R", val} -> navigate_waypoint(rest, {rotate_waypoint(:right, {wx, wy}, val), {x, y}})
+					{"L", val} -> navigate_waypoint(rest, {rotate_waypoint(:left, {wx, wy}, val), {x, y}})
+					{"F", val} -> navigate_waypoint(rest, {{wx, wy}, {x + (wx * val), y + (wy * val)}})
+				end
+		end
+	end
+
+	defp rotate_waypoint(verse, {x, y}, amount) do
+		case amount do
+			0 -> {x, y}
+			90 when verse == :right -> {y, -x}
+			270 when verse == :left -> {y, -x}
+			180 -> {-x, -y}
+			270 when verse == :right -> {-y, x}
+			90 when verse == :left -> {-y, x}
+		end
 	end
 
 	defp navigate(instructions, {direction, {x, y}}) do
