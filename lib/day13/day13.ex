@@ -19,25 +19,36 @@ defmodule Day13 do
 	@doc """
 	## Examples
 		iex> Day13.part2
-		1068781
+		554865447501099
 	"""
 	def part2 do
-# 112969600000000
-# 112977810000000
-
 		{_timestamp, ids} = 
-			["939", "7,13,x,x,59,x,31,19"]
+			Input.read(13)
 			|> decode_input
-		# {_timestamp, ids} = 
-		# 	Input.read(13)
-		# 	|> decode_input
 
-		ids
-		|> Enum.chunk_every(2,1,:discard)
-		|> Enum.map(fn pair = [{index_a, id_a}, {index_b, id_b}] -> {pair, analyze(id_a, id_b, index_b - index_a)} end)
-		
-		# fixed_ids = ids |> Enum.map(fn {index, id} -> {index - step_index, id} end) 
+		[ first | rest ] = ids
 
+		rest
+		|> Enum.map(&([first, &1]))
+		|> Enum.map(fn [{index_a, id_a}, {index_b, id_b}] -> analyze(id_a, id_b, index_b - index_a) end)
+		|> solve		
+
+	end
+
+	def solve([{c1, a}, {c2, b} | rest]) do
+		solve([simulate(c1, a, c2, b) | rest])
+	end
+	def solve([{solution, _}]) do
+		solution
+	end
+
+	def simulate(c1, a, c2, b) do
+		Stream.iterate(0, &(&1 + 1))
+		|> Stream.map(&(a * &1))
+		|> Stream.map(&(&1 + c1))
+		|> Stream.filter(fn ts1 -> rem(ts1 - c2, b) == 0 end)
+		|> Stream.take(2) |> Enum.to_list
+		|> (fn [ts1, ts2] -> {ts1, ts2 - ts1} end).()
 	end
 
 	def analyze(a, b, diff) do
