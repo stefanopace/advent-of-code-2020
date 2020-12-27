@@ -2,10 +2,28 @@ defmodule Day13 do
 	@doc """
 	## Examples
 		iex> Day13.part1
-		:error
+		6568
 	"""
 	def part1 do
-		:todo
+		{timestamp, ids} = 
+			Input.read(13)
+			|> decode_input
+
+		ids
+		|> Enum.map(fn id -> %{id: id, delay: id - rem(timestamp, id)} end)
+		|> Enum.min_by(&(&1.delay))
+		|> (fn %{id: id, delay: delay} -> id * delay end).()
+    end
+
+	defp decode_input([str_timestamp, ids_encoded]) do
+		{timestamp, _} = Integer.parse(str_timestamp)
+		ids =
+			ids_encoded 
+			|> String.split(",")
+			|> Enum.filter(&(&1 != "x"))
+			|> Enum.map(&(Integer.parse(&1) |> elem(0)))
+
+		{timestamp, ids}
 	end
 
 	@doc """
