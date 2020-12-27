@@ -5,7 +5,19 @@ defmodule Day14 do
 		:error
 	"""
 	def part1 do
-		:todo
+		Input.read(14)
+		|> Enum.map(&decode/1)
+	end
+
+	defp decode(line) do
+		case Regex.run(~r/(mask|mem)(?:\[([0-9]+)\])? = ([0-9X]+)/, line) do
+			[_, "mem", index, value] -> 
+				{index, _} = Integer.parse(index)
+				{value, _} = Integer.parse(value)
+				{:mem, index, value}
+			[_, "mask", _, value] -> 
+				{:mask, value}
+		end
 	end
 
 	@doc """
