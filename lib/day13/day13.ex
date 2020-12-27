@@ -10,6 +10,7 @@ defmodule Day13 do
 			|> decode_input
 
 		ids
+		|> Enum.map(fn {_index, id} -> id end)
 		|> Enum.map(fn id -> %{id: id, delay: id - rem(timestamp, id)} end)
 		|> Enum.min_by(&(&1.delay))
 		|> (fn %{id: id, delay: delay} -> id * delay end).()
@@ -20,8 +21,9 @@ defmodule Day13 do
 		ids =
 			ids_encoded 
 			|> String.split(",")
-			|> Enum.filter(&(&1 != "x"))
-			|> Enum.map(&(Integer.parse(&1) |> elem(0)))
+			|> Enum.with_index
+			|> Enum.filter(fn {id, _index} -> id != "x" end)
+			|> Enum.map(fn {id, index} -> {index, Integer.parse(id) |> elem(0)} end)
 
 		{timestamp, ids}
 	end
