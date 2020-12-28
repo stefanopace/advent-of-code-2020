@@ -11,6 +11,66 @@ defmodule Day14 do
 		|> sum_values
 	end
 
+	@doc """
+	## Examples
+		iex> Day14.part2
+		3974538275659
+	"""
+	def part2 do
+		Input.read(14)
+		|> Enum.map(&decode/1)
+		|> execute_v2(%{mask: nil, mem: %{}})
+		|> sum_values
+	end
+
+	defp execute_v2([instruction | rest], %{mask: mask, mem: mem}) do
+		case instruction do
+			{:mask, val} -> execute_v2(rest, %{mask: val, mem: mem})
+			{:mem, index, val} -> 
+				execute_v2(
+					rest, 
+					%{
+						mask: mask, 
+						mem: 
+							index
+							|> apply_mask_v2(mask)
+							|> generate_memory_addresses
+							|> Enum.reduce(mem, fn address, state -> Map.put(state, address, val) end)
+					}
+				)
+		end
+	end
+	defp execute_v2([], state) do
+		state
+	end
+
+	defp apply_mask_v2(index, mask) do
+		bin_index = Integer.to_string(index, 2) |> String.pad_leading(36, "0")
+
+		Enum.zip(String.graphemes(bin_index), String.graphemes(mask))
+		|> Enum.map(fn {bit, mask} -> 
+			case mask do
+				"0" -> bit
+				"1" -> mask
+				"X" -> "X"
+			end
+		end)
+	end
+
+	defp generate_memory_addresses(address) do
+		address
+		|> Enum.reverse
+		|> Enum.reduce([[]], fn bit, addresses -> 
+			case bit do
+				"X" -> addresses |> Enum.reduce([], fn address, acc -> 
+					[["1" | address], ["0" | address] | acc]
+				end)
+				bit -> addresses |> Enum.map(&([bit | &1]))
+			end
+		end)
+		|> Enum.map(&List.to_string/1)
+	end
+
 	defp sum_values(%{mem: mem}) do
 		mem
 		|> Map.values
@@ -49,14 +109,5 @@ defmodule Day14 do
 			[_, "mask", _, value] -> 
 				{:mask, value}
 		end
-	end
-
-	@doc """
-	## Examples
-		iex> Day14.part2
-		:error
-	"""
-	def part2 do
-		:error
 	end
 end
