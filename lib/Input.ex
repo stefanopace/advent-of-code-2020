@@ -18,5 +18,6 @@ defmodule Input do
 				acc -> {:cont, acc, []}
 			end
 		)
+		|> Enum.map(&Enum.reverse/1)
 	end
 end

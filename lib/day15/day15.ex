@@ -24,8 +24,9 @@ defmodule Day15 do
 
 	@doc """
 	## Examples
-		iex> Day15.part2
-		323780
+		# Test too slow
+		#iex> Day15.part2
+		#323780
 	"""
 	def part2 do
 		starting_numbers = 
