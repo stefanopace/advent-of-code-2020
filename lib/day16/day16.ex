@@ -29,7 +29,7 @@ defmodule Day16 do
 	@doc """
 	## Examples
 		iex> Day16.part2
-		:error
+		1265347500049
 	"""
 	def part2 do
 		[rules_input, my_ticket_input, nearby_tickets_input] = 
