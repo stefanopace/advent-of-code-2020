@@ -11,17 +11,53 @@ defmodule Day18 do
 		|> Enum.sum
 	end
 
-	defp solve(expression) when is_number(expression) do
-		expression
+
+	@doc """
+	## Examples
+		iex> ["4 * 2 + 3"] |> Day18.part2
+		20
+
+		iex> ["(4 * 2) + 3"] |> Day18.part2
+		11
+
+		iex> ["4 * 2 + 3 * 9"] |> Day18.part2
+		180
+
+		iex> ["((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2"] |> Day18.part2
+		23340
+		
+		iex> ["5 * 9 * (7 * 3 * 3 + 9 * 3 + (8 + 6 * 4))"] |> Day18.part2
+		669060
+
+		iex> Input.read(18) |> Day18.part2
+		362464596624526
+	"""
+	def part2(input) do
+		input
+		|> Enum.map(fn row -> 
+			row
+			|> parse_expression
+			|> solve_v2
+		end)
+		|> Enum.sum
 	end
-	defp solve([expression]) do
-		expression
+
+	defp solve_v2(expression) do
+		case expression do
+			expression when is_number(expression) -> expression
+			[expression] -> solve_v2(expression)
+			[left, "*", right | rest] -> solve_v2(left) * solve_v2([right | rest])
+			[left, "+", right | rest] -> solve_v2([solve_v2(left) + solve_v2(right) | rest])
+		end
 	end
-	defp solve([left, "*", right | rest]) do
-		solve([solve(left) * solve(right) | rest])
-	end
-	defp solve([left, "+", right | rest]) do
-		solve([solve(left) + solve(right) | rest])
+
+	defp solve(expression) do
+		case expression do
+			expression when is_number(expression) -> expression
+			[expression] -> solve(expression)
+			[left, "*", right | rest] -> solve([solve(left) * solve(right) | rest])
+			[left, "+", right | rest] -> solve([solve(left) + solve(right) | rest])
+		end
 	end
 
 	defp parse_expression(encoded) do
@@ -66,14 +102,5 @@ defmodule Day18 do
 				symbol -> symbol
 			end
 		)
-	end
-
-	@doc """
-	## Examples
-		iex> Day18.part2
-		:error
-	"""
-	def part2 do
-		:error
 	end
 end
