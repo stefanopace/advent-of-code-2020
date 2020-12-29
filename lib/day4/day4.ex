@@ -49,11 +49,11 @@ defmodule Day4 do
 
 	@doc """
 	## Examples
-		iex> Day4.part1
+		iex> Input.read(4) |> Day4.part1
 		230
 	"""
-	def part1 do
-		Input.read(4)
+	def part1(input) do
+		input
 		|> parse_documents
 		|> Enum.filter(&required_fields_are_present/1)
 		|> Enum.count
@@ -61,11 +61,11 @@ defmodule Day4 do
 	
 	@doc """
 	## Examples
-		iex> Day4.part2
+		iex> Input.read(4) |> Day4.part2
 		156
 	"""
-	def part2 do
-		Input.read(4)
+	def part2(input) do
+		input
 		|> parse_documents
 		|> Enum.filter(&required_fields_are_present/1)
 		|> Enum.filter(&fields_are_valids/1)

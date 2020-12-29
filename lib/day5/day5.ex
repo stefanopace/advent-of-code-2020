@@ -2,11 +2,11 @@ defmodule Day5 do
 
 	@doc """
 	## Examples
-		iex> Day5.part1
+		iex> Input.read(5) |> Day5.part1
 		888
 	"""
-	def part1 do
-		Input.read(5)
+	def part1(input) do
+		input
 		|> Enum.map(&decode/1)
 		|> Enum.max_by(fn {_row, _col, id, _code} -> id end)
 		|> elem(2)
@@ -14,11 +14,11 @@ defmodule Day5 do
 
 	@doc """
 	## Examples
-		iex> Day5.part2
+		iex> Input.read(5) |> Day5.part2
 		522
 	"""
-	def part2 do
-		Input.read(5)
+	def part2(input) do
+		input
 		|> Enum.map(&decode/1)
 		|> Enum.sort_by(fn {_row, _col, id, _code} -> id end)
 		|> Enum.chunk_every(2, 1, :discard)
