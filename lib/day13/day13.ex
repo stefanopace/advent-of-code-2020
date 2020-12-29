@@ -1,12 +1,12 @@
 defmodule Day13 do
 	@doc """
 	## Examples
-		iex> Day13.part1
+		iex> Input.read(13) |> Day13.part1
 		6568
 	"""
-	def part1 do
+	def part1(input) do
 		{timestamp, ids} = 
-			Input.read(13)
+			input
 			|> decode_input
 
 		ids
@@ -18,12 +18,12 @@ defmodule Day13 do
 	
 	@doc """
 	## Examples
-		iex> Day13.part2
+		iex> Input.read(13) |> Day13.part2
 		554865447501099
 	"""
-	def part2 do
+	def part2(input) do
 		{_timestamp, ids} = 
-			Input.read(13)
+			input
 			|> decode_input
 
 		[ first | rest ] = ids

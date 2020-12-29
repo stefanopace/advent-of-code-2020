@@ -1,11 +1,11 @@
 defmodule Day14 do
 	@doc """
 	## Examples
-		iex> Day14.part1
+		iex> Input.read(14) |> Day14.part1
 		10717676595607
 	"""
-	def part1 do
-		Input.read(14)
+	def part1(input) do
+		input
 		|> Enum.map(&decode/1)
 		|> execute(%{mask: nil, mem: %{}})
 		|> sum_values
@@ -13,11 +13,20 @@ defmodule Day14 do
 
 	@doc """
 	## Examples
-		iex> Day14.part2
-		3974538275659
+		iex> [
+		...>	"mask = 000000000000000000000000000000X1001X",
+		...>	"mem[42] = 100",
+		...>	"mask = 00000000000000000000000000000000X0XX",
+		...>	"mem[26] = 1"
+		...> ] |> Day14.part2
+		208
+
+		# test too slow
+		# iex> Input.read(14) |> Day14.part2
+		# 3974538275659
 	"""
-	def part2 do
-		Input.read(14)
+	def part2(input) do
+		input
 		|> Enum.map(&decode/1)
 		|> execute_v2(%{mask: nil, mem: %{}})
 		|> sum_values

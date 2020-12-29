@@ -1,11 +1,11 @@
 defmodule Day12 do
 	@doc """
 	## Examples
-		iex> Day12.part1
+		iex> Input.read(12) |> Day12.part1
 		1152
 	"""
-	def part1 do
-		Input.read(12)
+	def part1(input) do
+		input
 		|> decode_instructions
 		|> navigate({90, {0, 0}})
 		|> manhattan_distance
@@ -13,11 +13,11 @@ defmodule Day12 do
 
 	@doc """
 	## Examples
-		iex> Day12.part2
+		iex> Input.read(12) |> Day12.part2
 		58637
 	"""
-	def part2 do
-		Input.read(12)
+	def part2(input) do
+		input
 		|> decode_instructions
 		|> navigate_waypoint({{10, 1}, {0, 0}})
 		|> manhattan_distance
