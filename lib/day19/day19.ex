@@ -17,13 +17,17 @@ defmodule Day19 do
 		...>] |> Day19.part1
 		2
 
-		# iex> Input.read(19) |> Day19.part1
-		# :result
+		iex> Input.read(19) |> Day19.part1
+		118
 	"""
 	def part1(input) do
 		[encoded_rules, messages] = Input.split_on_blank_lines(input)
 
 		rules = parse_indexed_rules(encoded_rules)
+
+		messages
+		|> Enum.filter(fn message -> [] == message |> String.graphemes |> match_rule(rules, rules[0]) end)
+		|> Enum.count
 	end
 
 	@doc """
@@ -31,8 +35,29 @@ defmodule Day19 do
 		iex> Input.read(19) |> Day19.part2
 		:result
 	"""
-	def part2(input) do
+	def part2(_input) do
 		:result
+	end
+
+	defp match_rule(message, rules, rule) when length(rule) > 1 do
+		rule
+		|> Enum.find_value(false, fn rule_part -> match_rule(message, rules, [rule_part]) end)
+	end
+
+	defp match_rule([first | rest], _rules, [["a"]]), do: (if (first == "a"), do: rest, else: false)
+	defp match_rule([first | rest], _rules, [["b"]]), do: (if (first == "b"), do: rest, else: false)
+	defp match_rule(message, rules, [rule]) do
+		rule
+		|> Enum.map(&(rules[&1]))
+		|> Enum.reduce_while(
+			message,
+			fn rule_atom, rest ->
+				case match_rule(rest, rules, rule_atom) do
+					false -> {:halt, false}
+					rest -> {:cont, rest}
+				end
+			end
+		)
 	end
 
 	defp parse_indexed_rules(encoded_rules) do

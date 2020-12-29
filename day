@@ -22,7 +22,7 @@ defmodule Day$1 do
 		iex> Input.read($1) |> Day$1.part2
 		:result
 	"""
-	def part2(input) do
+	def part2(_input) do
 		:result
 	end
 end
