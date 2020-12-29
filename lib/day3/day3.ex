@@ -1,6 +1,6 @@
 defmodule Day3 do
-	defp count_trees(horizontale_move, vertical_move) do
-		Input.read(3)
+	defp count_trees(input, horizontale_move, vertical_move) do
+		input
 		|> Enum.take_every(vertical_move)
 		|> Enum.reduce(
 			{0, []},
@@ -17,21 +17,21 @@ defmodule Day3 do
 
 	@doc """
 	## Examples
-		iex> Day3.part1
+		iex> Input.read(3) |> Day3.part1
 		252
 	"""
-	def part1 do
-		count_trees(3, 1)
+	def part1(input) do
+		count_trees(input, 3, 1)
 	end
 	
 	@doc """
 	## Examples
-		iex> Day3.part2
+		iex> Input.read(3) |> Day3.part2
 		2608962048
 	"""
-	def part2 do
+	def part2(input) do
 		[{1, 1}, {3, 1}, {5, 1}, {7, 1}, {1, 2}]
-		|> Enum.map(fn {h, v} -> count_trees(h, v) end)
+		|> Enum.map(fn {h, v} -> count_trees(input, h, v) end)
 		|> Enum.reduce(1, fn (cur, mul) -> mul * cur end)
 	end
 end

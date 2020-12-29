@@ -4,11 +4,11 @@ defmodule Day2 do
 	end
 	@doc """
 	## Examples
-		iex> Day2.part1
+		iex> Input.read(2) |> Day2.part1
 		416
 	"""
-	def part1 do
-		Input.read(2)
+	def part1(input) do
+		input
 		|> Enum.map(fn line -> 
 			[_all, min, max, char, password] = Regex.run(~r"(.*)-(.*) (.): (.*)", line)
 			{min, _rest} = Integer.parse(min)
@@ -25,11 +25,14 @@ defmodule Day2 do
 
 	@doc """
 	## Examples
-		iex> Day2.part2
+		iex> Input.read(2) |> Day2.part2
 		688
+	
+		iex> ["1-3 a: abcde", "1-3 b: cdefg", "2-9 c: ccccccccc"] |> Day2.part2
+		1
 	"""
-	def part2 do
-		Input.read(2)
+	def part2(input) do
+		input
 		|> Enum.map(fn line -> 
 			[_all, first, second, char, password] = Regex.run(~r"(.*)-(.*) (.): (.*)", line)
 			{first, _rest} = Integer.parse(first)
