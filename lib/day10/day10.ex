@@ -1,12 +1,12 @@
 defmodule Day10 do
 	@doc """
 	## Examples
-		iex> Day10.part1
+		iex> Input.read(10) |> Day10.part1
 		1917
 	"""
-	def part1 do
+	def part1(input) do
 		adapters = 
-			Input.read(10)
+			input
 			|> Enum.map(fn strnum -> Integer.parse(strnum) |> elem(0) end)
 		
 		builtin_adapter = Enum.max(adapters) + 3
@@ -24,11 +24,11 @@ defmodule Day10 do
 
 	@doc """
 	## Examples
-		iex> Day10.part2
+		iex> Input.read(10) |> Day10.part2
 		113387824750592
 	"""
-	def part2 do
-		Input.read(10)
+	def part2(input) do
+		input
 		|> Enum.map(fn strnum -> Integer.parse(strnum) |> elem(0) end)
 		|> (fn adapters -> [0] ++ adapters ++ [Enum.max(adapters) + 3] end).()
 		|> Enum.sort

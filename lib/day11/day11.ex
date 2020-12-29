@@ -1,11 +1,26 @@
 defmodule Day11 do
 	@doc """
 	## Examples
-		iex> Day11.part1
-		2303
+		iex> [
+		...>	"L.LL.LL.LL",
+		...>	"LLLLLLL.LL",
+		...>	"L.L.L..L..",
+		...>	"LLLL.LL.LL",
+		...>	"L.LL.LL.LL",
+		...>	"L.LLLLL.LL",
+		...>	"..L.L.....",
+		...>	"LLLLLLLLLL",
+		...>	"L.LLLLLL.L",
+		...>	"L.LLLLL.LL",
+		...>] |> Day11.part1
+		37
+
+		# test too slow
+		# iex> Input.read(11) |> Day11.part1
+		# 2303
 	"""
-	def part1 do
-		Input.read(11)
+	def part1(input) do
+		input
 		|> to_matrix
 		|> stabilize(&apply_part1_rules/4)
 		|> count_occupied_seats
@@ -13,11 +28,26 @@ defmodule Day11 do
 
 	@doc """
 	## Examples
-		iex> Day11.part2
-		2057
+		iex> [
+		...>	"L.LL.LL.LL",
+		...>	"LLLLLLL.LL",
+		...>	"L.L.L..L..",
+		...>	"LLLL.LL.LL",
+		...>	"L.LL.LL.LL",
+		...>	"L.LLLLL.LL",
+		...>	"..L.L.....",
+		...>	"LLLLLLLLLL",
+		...>	"L.LLLLLL.L",
+		...>	"L.LLLLL.LL",
+		...>] |> Day11.part2
+		26
+
+		# test too slow
+		# iex> Input.read(11) |> Day11.part2
+		# 2057
 	"""
-	def part2 do
-		Input.read(11)
+	def part2(input) do
+		input
 		|> to_matrix
 		|> stabilize(&apply_part2_rules/4)
 		|> count_occupied_seats
