@@ -7,21 +7,21 @@ defmodule Day18 do
 	def part1 do
 		Input.read(18)
 		|> Enum.map(&parse_expression/1)
-		|> Enum.map(&solve_v1/1)
+		|> Enum.map(&solve/1)
 		|> Enum.sum
 	end
 
-	defp solve_v1(expression) when is_number(expression) do
+	defp solve(expression) when is_number(expression) do
 		expression
 	end
-	defp solve_v1([expression]) do
+	defp solve([expression]) do
 		expression
 	end
-	defp solve_v1([left, "*", right | rest]) do
-		solve_v1([solve_v1(left) * solve_v1(right) | rest])
+	defp solve([left, "*", right | rest]) do
+		solve([solve(left) * solve(right) | rest])
 	end
-	defp solve_v1([left, "+", right | rest]) do
-		solve_v1([solve_v1(left) + solve_v1(right) | rest])
+	defp solve([left, "+", right | rest]) do
+		solve([solve(left) + solve(right) | rest])
 	end
 
 	defp parse_expression(encoded) do
@@ -29,7 +29,7 @@ defmodule Day18 do
 		|> String.replace(" ", "")
 		|> String.graphemes
 		|> parse_integers
-		|> parenthesize
+		|> parse_parenthesis
 	end
 
 	defp parse_integers(encoded) do
@@ -42,7 +42,7 @@ defmodule Day18 do
 		end)
 	end
 
-	defp parenthesize(encoded) do
+	defp parse_parenthesis(encoded) do
 		encoded
 		|> Enum.chunk_while(
 			{0, []},
@@ -62,7 +62,7 @@ defmodule Day18 do
 		)
 		|> Enum.map(
 			fn 
-				expr when is_list(expr) -> parenthesize(expr)
+				expr when is_list(expr) -> parse_parenthesis(expr)
 				symbol -> symbol
 			end
 		)
