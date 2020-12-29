@@ -14,7 +14,7 @@ defmodule Day$1 do
 		:result
 	"""
 	def part1(input) do
-		input
+		:result
 	end
 
 	@doc """
@@ -23,7 +23,7 @@ defmodule Day$1 do
 		:result
 	"""
 	def part2(input) do
-		(input)
+		:result
 	end
 end
 EOF
