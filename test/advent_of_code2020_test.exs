@@ -16,4 +16,5 @@ defmodule AdventOfCode2020Test do
   doctest Day14
   doctest Day15
   doctest Day16
+  doctest Day17
 end
