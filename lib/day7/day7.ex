@@ -1,11 +1,11 @@
 defmodule Day7 do
 	@doc """
 	## Examples
-		iex> Day7.part1
+		iex> Input.read(7) |> Day7.part1
 		148
 	"""
-	def part1 do
-		Input.read(7)
+	def part1(input) do
+		input
 		|> Enum.map(&decode_rule/1)
 		|> find_outmosts([["shiny gold"]])
 		|> Enum.filter(fn col -> col != "shiny gold" end)
@@ -47,11 +47,11 @@ defmodule Day7 do
 
 	@doc """
 	## Examples
-		iex> Day7.part2
+		iex> Input.read(7) |> Day7.part2
 		24867
 	"""
-	def part2 do
-		Input.read(7)
+	def part2(input) do
+		input
 		|> Enum.map(&decode_rule/1)
 		|> count_bags("shiny gold")
 		|> Kernel.-(1)

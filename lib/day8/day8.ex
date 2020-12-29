@@ -1,11 +1,11 @@
 defmodule Day8 do
 	@doc """
 	## Examples
-		iex> Day8.part1
+		iex> Input.read(8) |> Day8.part1
 		1600
 	"""
-	def part1 do
-		Input.read(8)
+	def part1(input) do
+		input
 		|> Enum.map(&decode_instruction/1)
 		|> find_loop(%{cur: 0, acc: 0})
 	end
@@ -27,11 +27,11 @@ defmodule Day8 do
 
 	@doc """
 	## Examples
-		iex> Day8.part2
+		iex> Input.read(8) |> Day8.part2
 		1543
 	"""
-	def part2 do
-		Input.read(8)
+	def part2(input) do
+		input
 		|> Enum.map(&decode_instruction/1)
 		|> traverse(%{cur: 0, acc: 0, fixed: false})
 	end

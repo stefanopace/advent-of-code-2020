@@ -1,18 +1,18 @@
 defmodule Day9 do
 	@doc """
 	## Examples
-		iex> Day9.part1
+		iex> {25, Input.read(9)} |> Day9.part1
 		25918798
 	"""
-	def part1 do
-		Input.read(9)
+	def part1({preamble_length, input}) do
+		input
 		|> Enum.map(fn strnum -> Integer.parse(strnum) |> elem(0) end)
-		|> find_wrong()
+		|> find_wrong(preamble_length)
 	end
 
-	defp find_wrong(numbers) do
-		{preamble, [number | _rest]} = Enum.split(numbers, 25)
-		if is_sum_of_two(number, preamble), do: find_wrong(tl(numbers)), else: number
+	defp find_wrong(numbers, preamble_length) do
+		{preamble, [number | _rest]} = Enum.split(numbers, preamble_length)
+		if is_sum_of_two(number, preamble), do: find_wrong(tl(numbers), preamble_length), else: number
 	end
 
 	defp is_sum_of_two(number, list) do
@@ -23,15 +23,18 @@ defmodule Day9 do
 
 	@doc """
 	## Examples
-		iex> Day9.part2
-		3340942
+		iex> {5, ["35", "20", "15", "25", "47", "40", "62", "55", "65", "95", "102", "117", "150", "182", "127", "219", "299", "277", "309", "576"]} |> Day9.part2
+		62
+
+		# iex> {25, Input.read(9)} |> Day9.part2
+		# 3340942
 	"""
-	def part2 do
+	def part2({preamble_length, input}) do
 		numbers = 
-			Input.read(9)
+			input
 			|> Enum.map(fn strnum -> Integer.parse(strnum) |> elem(0) end)
 		
-		invalid = find_wrong(numbers)
+		invalid = find_wrong(numbers, preamble_length)
 
 		find_weak_sequence(numbers, invalid, [])
 		|> Enum.min_max
