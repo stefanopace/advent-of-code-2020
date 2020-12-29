@@ -1,12 +1,12 @@
 defmodule Day15 do
 	@doc """
 	## Examples
-		iex> Day15.part1
+		iex> Input.read(15) |> Day15.part1
 		376
 	"""
-	def part1 do
+	def part1(input) do
 		starting_numbers = 
-			Input.read(15)
+			input
 			|> List.first
 			|> String.split(",")
 			|> Enum.map(&(&1 |> Integer.parse |> elem(0)))
@@ -24,13 +24,13 @@ defmodule Day15 do
 
 	@doc """
 	## Examples
-		# Test too slow
-		#iex> Day15.part2
-		#323780
+		# Test too slow (really)
+		# iex> Input.read(15) |> Day15.part2
+		# 323780
 	"""
-	def part2 do
+	def part2(input) do
 		starting_numbers = 
-			Input.read(15)
+			input
 			|> List.first
 			|> String.split(",")
 			|> Enum.map(&(&1 |> Integer.parse |> elem(0)))

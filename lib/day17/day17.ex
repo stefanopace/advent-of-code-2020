@@ -1,11 +1,11 @@
 defmodule Day17 do
 	@doc """
 	## Examples
-		iex> Day17.part1
+		iex> Input.read(17) |> Day17.part1
 		247
 	"""
-	def part1 do
-		Input.read(17)
+	def part1(input) do
+		input
 		|> to_3d_space
 		
 		|> expand_edges
@@ -31,11 +31,20 @@ defmodule Day17 do
 
 	@doc """
 	## Examples
-		iex> Day17.part2
-		1392
+		# test too slow
+		# iex> [
+		# ...>	".#.",
+		# ...>	"..#",
+		# ...>	"###"
+		# ...> ] |> Day17.part2
+		# 848
+
+		# test too slow
+		# iex> Input.read(17) |> Day17.part2
+		# 1392
 	"""
-	def part2 do
-		Input.read(17)
+	def part2(input) do
+		input
 		|> to_4d_space
 		
 		|> expand_edges_4d

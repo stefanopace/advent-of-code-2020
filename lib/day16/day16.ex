@@ -1,12 +1,12 @@
 defmodule Day16 do
 	@doc """
 	## Examples
-		iex> Day16.part1
+		iex> Input.read(16) |> Day16.part1
 		25984
 	"""
-	def part1 do
+	def part1(input) do
 		[rules_input, my_ticket_input, nearby_tickets_input] = 
-			Input.read(16)
+			input
 			|> Input.split_on_blank_lines
 
 		rules = parse_rules(rules_input)
@@ -28,12 +28,12 @@ defmodule Day16 do
 
 	@doc """
 	## Examples
-		iex> Day16.part2
+		iex> Input.read(16) |> Day16.part2
 		1265347500049
 	"""
-	def part2 do
+	def part2(input) do
 		[rules_input, my_ticket_input, nearby_tickets_input] = 
-			Input.read(16)
+			input
 			|> Input.split_on_blank_lines
 
 		rules = parse_rules(rules_input)

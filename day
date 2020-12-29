@@ -10,20 +10,20 @@ cat << EOF  > ./lib/day$1/day$1.ex
 defmodule Day$1 do
 	@doc """
 	## Examples
-		iex> Day$1.part1
-		:error
+		iex> Input.read($1) |> Day$1.part1
+		:result
 	"""
-	def part1 do
-		:todo
+	def part1(input) do
+		input
 	end
 
 	@doc """
 	## Examples
-		iex> Day$1.part2
-		:error
+		iex> Input.read($1) |> Day$1.part2
+		:result
 	"""
-	def part2 do
-		:error
+	def part2(input) do
+		(input)
 	end
 end
 EOF

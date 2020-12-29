@@ -1,11 +1,11 @@
 defmodule Day18 do
 	@doc """
 	## Examples
-		iex> Day18.part1
+		iex> Input.read(18) |> Day18.part1
 		69490582260
 	"""
-	def part1 do
-		Input.read(18)
+	def part1(input) do
+		input
 		|> Enum.map(&parse_expression/1)
 		|> Enum.map(&solve/1)
 		|> Enum.sum
