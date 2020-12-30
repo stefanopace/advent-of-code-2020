@@ -26,136 +26,54 @@ defmodule Day19 do
 		rules = parse_indexed_rules(encoded_rules)
 
 		messages
-		|> Enum.filter(fn message -> [] == message |> String.graphemes |> match_rule(rules, rules[0]) end)
-		|> Enum.count
+		|> Enum.count(fn message -> message |> String.graphemes |> match_rule?({rules, [rules[0]]}) end)
 	end
 
 	@doc """
 	## Examples
-	# iex> [
-	# ...>	"42: 9 14 | 10 1",
-	# ...>	"9: 14 27 | 1 26",
-	# ...>	"10: 23 14 | 28 1",
-	# ...>	"1: \\"a\\"",
-	# ...>	"11: 42 31",
-	# ...>	"5: 1 14 | 15 1",
-	# ...>	"19: 14 1 | 14 14",
-	# ...>	"12: 24 14 | 19 1",
-	# ...>	"16: 15 1 | 14 14",
-	# ...>	"31: 14 17 | 1 13",
-	# ...>	"6: 14 14 | 1 14",
-	# ...>	"2: 1 24 | 14 4",
-	# ...>	"0: 8 11",
-	# ...>	"13: 14 3 | 1 12",
-	# ...>	"15: 1 | 14",
-	# ...>	"17: 14 2 | 1 7",
-	# ...>	"23: 25 1 | 22 14",
-	# ...>	"28: 16 1",
-	# ...>	"4: 1 1",
-	# ...>	"20: 14 14 | 1 15",
-	# ...>	"3: 5 14 | 16 1",
-	# ...>	"27: 1 6 | 14 18",
-	# ...>	"14: \\"b\\"",
-	# ...>	"21: 14 1 | 1 14",
-	# ...>	"25: 1 1 | 1 14",
-	# ...>	"22: 14 14",
-	# ...>	"8: 42",
-	# ...>	"26: 14 22 | 1 20",
-	# ...>	"18: 15 15",
-	# ...>	"7: 14 5 | 1 21",
-	# ...>	"24: 14 1",
-	# ...>	"",
-	# ...>	"abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa",
-	# ...>	"bbabbbbaabaabba",
-	# ...>	"babbbbaabbbbbabbbbbbaabaaabaaa",
-	# ...>	"aaabbbbbbaaaabaababaabababbabaaabbababababaaa",
-	# ...>	"bbbbbbbaaaabbbbaaabbabaaa",
-	# ...>	"bbbababbbbaaaaaaaabbababaaababaabab",
-	# ...>	"ababaaaaaabaaab",
-	# ...>	"ababaaaaabbbaba",
-	# ...>	"baabbaaaabbaaaababbaababb",
-	# ...>	"abbbbabbbbaaaababbbbbbaaaababb",
-	# ...>	"aaaaabbaabaaaaababaa",
-	# ...>	"aaaabbaaaabbaaa",
-	# ...>	"aaaabbaabbaaaaaaabbbabbbaaabbaabaaa",
-	# ...>	"babaaabbbaaabaababbaabababaaab",
-	# ...>	"aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba"
-	# ...> ] |> Day19.part2
-	# 12
-
-	iex> [
-	...>	"42: 9 14 | 10 1",
-	...>	"9: 14 27 | 1 26",
-	...>	"10: 23 14 | 28 1",
-	...>	"1: \\"a\\"",
-	...>	"11: 42 31",
-	...>	"5: 1 14 | 15 1",
-	...>	"19: 14 1 | 14 14",
-	...>	"12: 24 14 | 19 1",
-	...>	"16: 15 1 | 14 14",
-	...>	"31: 14 17 | 1 13",
-	...>	"6: 14 14 | 1 14",
-	...>	"2: 1 24 | 14 4",
-	...>	"0: 8 11",
-	...>	"13: 14 3 | 1 12",
-	...>	"15: 1 | 14",
-	...>	"17: 14 2 | 1 7",
-	...>	"23: 25 1 | 22 14",
-	...>	"28: 16 1",
-	...>	"4: 1 1",
-	...>	"20: 14 14 | 1 15",
-	...>	"3: 5 14 | 16 1",
-	...>	"27: 1 6 | 14 18",
-	...>	"14: \\"b\\"",
-	...>	"21: 14 1 | 1 14",
-	...>	"25: 1 1 | 1 14",
-	...>	"22: 14 14",
-	...>	"8: 42",
-	...>	"26: 14 22 | 1 20",
-	...>	"18: 15 15",
-	...>	"7: 14 5 | 1 21",
-	...>	"24: 14 1",
-	...>	"",
-	...>	"babbbbaabbbbbabbbbbbaabaaabaaa",
-	...> ] |> Day19.part2
-	1
-
-		# iex> Input.read(19) |> Day19.part2
-		# :result
+		iex> Input.read(19) |> Day19.part2
+		246
 	"""
 	def part2(input) do
 		[encoded_rules, messages] = Input.split_on_blank_lines(input)
 
 		rules = 
-			parse_indexed_rules(encoded_rules)		
-			|> Map.put(8, [[42], [42, 8]])
-			|> Map.put(11, [[42, 31], [42, 11, 31]])
+			parse_indexed_rules(encoded_rules)
+			|> Map.put(8, {:or, [{:and, [42]}, {:and, [42, 8]}]})
+			|> Map.put(11, {:or, [{:and, [42, 31]}, {:and, [42, 11, 31]}]})
 		
 		messages
-		|> Enum.map(fn message ->  message |> String.graphemes |> match_rule(rules, rules[0]) end)
-		# |> Enum.count
+		|> Enum.count(fn message ->  message |> String.graphemes |> match_rule?({rules, [rules[0]]}) end)		
 	end
 
-	defp match_rule(message, rules, rule) when length(rule) > 1 do
-		rule
-		|> Enum.map(fn rule_part -> match_rule(message, rules, [rule_part]) end)
-		|> Enum.find(false, fn res -> res end)
+
+	defp match_rule?(string, {_rulemap, []}), do: string == []
+	defp match_rule?([], {_rulemap, _rule}), do: false
+	defp match_rule?(string = [head | tail], {rulemap, [rule | rest]}) do
+		case rule do
+			"a" -> head == "a" and match_rule?(tail, {rulemap, rest})
+			"b" -> head == "b" and match_rule?(tail, {rulemap, rest})
+			index when is_number(index) -> match_rule?(string, {rulemap, [rulemap[index] | rest]})
+			{:or, rules} -> Enum.any?(rules, fn rule -> match_rule?(string, {rulemap, [rule | rest]}) end)
+			{:and, rules} -> match_rule?(string, {rulemap, rules ++ rest})
+		end
 	end
-	defp match_rule([], _rules, _rule), do: false
-	defp match_rule([first | rest], _rules, [["a"]]), do: (if (first == "a"), do: rest, else: false)
-	defp match_rule([first | rest], _rules, [["b"]]), do: (if (first == "b"), do: rest, else: false)
-	defp match_rule(message, rules, [rule]) do
-		rule
-		|> Enum.map(&(rules[&1]))
-		|> Enum.reduce_while(
-			message,
-			fn rule_atom, rest ->
-				case match_rule(rest, rules, rule_atom) do
-					false -> {:halt, false}
-					rest -> {:cont, rest}
-				end
-			end
-		)
+
+	defp parse_rule(encoded_rule) do
+		cond do
+			String.contains?(encoded_rule, "|") ->
+				encoded_rule
+				|> String.split(" | ")
+				|> Enum.map(&parse_rule/1)
+				|> (&({:or, &1})).()
+			encoded_rule == "\"a\"" -> "a"
+			encoded_rule == "\"b\"" -> "b"
+			true ->
+				encoded_rule
+				|> String.split
+				|> Enum.map(fn num -> Integer.parse(num) |> elem(0) end)
+				|> (&({:and, &1})).()
+		end
 	end
 
 	defp parse_indexed_rules(encoded_rules) do
@@ -165,24 +83,7 @@ defmodule Day19 do
 			{rule_index, _} = Integer.parse(rule_index_str)
 			{rule_index, rule}
 		end)
-		|> Enum.map(fn {index, encoded_rule} -> 
-			decoded_rule = 
-				encoded_rule
-				|> String.split(" | ")
-				|> Enum.map(fn rule_part -> 
-					rule_part
-					|> String.split 
-					|> Enum.map(fn rule_atom -> 
-						case rule_atom do
-							"\"a\"" -> "a"
-							"\"b\"" -> "b"
-							num -> Integer.parse(num) |> elem(0)
-						end
-					end)
-				end)
-			
-			{index, decoded_rule}
-		end)
+		|> Enum.map(fn {index, encoded_rule} -> {index, parse_rule(encoded_rule)} end)
 		|> Map.new
 	end
 end
