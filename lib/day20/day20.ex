@@ -20,19 +20,38 @@ defmodule Day20 do
 	defp connect_other_tiles({tile_bag, canvas}) do
 		canvas
 		|> find_a_tile_missing_a_neighbor
-	
+		|> find_the_missing_neighbor(tile_bag)
+	end
+
+	defp find_the_missing_neighbor({canvas, {{{x, y}, tile}, direction}}, tile_bag) do
+		neighbor = 
+			tile_bag
+			|> Enum.find_value(
+				:edge, 
+				fn tile_in_the_bag -> 
+					rotations_of(tile_in_the_bag)
+					|> Enum.find(false, fn rotated_tile -> tile |> connects?(rotated_tile, direction) end)
+				end)
+	end
+
+	defp rotations_of(tile) do
+		[tile]
+	end
+
+	defp connects?(tile1, tile2, direction) do
+		true
 	end
 
 	defp find_a_tile_missing_a_neighbor(canvas) do
 		canvas
-		|> Enum.find_value(:work_done, fn tile = {{x, y}, data} ->
+		|> Enum.find_value(fn tile = {{x, y}, data} ->
 			missing = 
 				[{0, -1}, {1, 0}, {0, 1}, {-1, 1}]
 				|> Enum.find(fn {dx, dy} -> 
 					not Map.has_key?(canvas, {x + dx, y + dy})
 				end)
 			
-			if missing, do: {tile, missing}, else: false
+			if missing, do: {canvas, {tile, missing}}, else: false
 		end)
 	end
 
