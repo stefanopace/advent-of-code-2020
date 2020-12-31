@@ -35,18 +35,75 @@ defmodule Day20 do
 	end
 
 	defp rotations_of(tile) do
-		[tile]
+		r90 = rotate(tile)
+		r180 = rotate(r90)
+		r270 = rotate(r180)
+		flipped = flip(tile)
+		fr90 = rotate(flipped)
+		fr180 = rotate(fr90)
+		fr270 = rotate(fr180)
+		[tile, r90, r180, r270, flipped, fr90, fr180, fr270]
+	end
+
+	defp rotate({id, data}) do
+		rotated = 
+			data
+			|> Enum.map(fn {{x, y}, pixel} ->
+				{{y, 9 - x}, pixel}
+			end)
+			|> Map.new
+
+		{id, rotated}
+	end
+
+	defp flip({id, data}) do
+		flipped =
+			data
+			|> Enum.map(fn {{x, y}, pixel} ->
+				{{9 - x, y}, pixel}
+			end)
+			|> Map.new
+		
+		{id, flipped}
 	end
 
 	defp connects?(tile1, tile2, direction) do
+		case direction do
+			{0, -1} -> connects_top?(tile1, tile2)
+			{1, 0} -> connects_right?(tile1, tile2)
+			{0, 1} -> connects_bottom?(tile1, tile2)
+			{-1, 0} -> connects_left?(tile1, tile2)
+		end
 		true
+	end
+
+	defp connects_top?(tile1, tile2) do
+		top_border(tile1) == bottom_border(tile2)
+	end
+
+	defp connects_right?(tile1, tile2) do
+		right_border(tile1) == left_border(tile2)
+	end
+
+	defp connects_bottom?(tile1, tile2) do
+		bottom_border(tile1) == top_border(tile2)
+	end
+
+	defp connects_left?(tile1, tile2) do
+		left_border(tile1) == right_border(tile2)
+	end
+
+	defp top_border(tile) do
+		tile
+		|> Enum.filter(fn {{_x, y}, pixel} -> y == 0 end)
+		|> Enum.map(fn {{x, y}, pixel})
 	end
 
 	defp find_a_tile_missing_a_neighbor(canvas) do
 		canvas
 		|> Enum.find_value(fn tile = {{x, y}, data} ->
 			missing = 
-				[{0, -1}, {1, 0}, {0, 1}, {-1, 1}]
+				[{0, -1}, {1, 0}, {0, 1}, {-1, 0}]
 				|> Enum.find(fn {dx, dy} -> 
 					not Map.has_key?(canvas, {x + dx, y + dy})
 				end)
