@@ -8,12 +8,114 @@ defmodule Day20 do
 		# 21599955909991
 	"""
 	def part1(input) do
-		input 
+		input
 		|> parse_tiles
 		|> pick_one_tile
 		|> connect_other_tiles
 		|> filter_only_corners_id
 		|> Enum.reduce(&(&1 * &2))
+	end
+
+	@doc """
+	## Examples
+		iex> Input.read("./lib/day20/input_example") |> Day20.part2
+		273
+	
+		# iex> Input.read(20) |> Day20.part2
+		# :result
+	"""
+	def part2(input) do
+		input
+		|> parse_tiles
+		|> pick_one_tile
+		|> connect_other_tiles
+		|> remove_edges_and_ids
+		|> merge_all_tiles
+		|> count_monsters
+	end
+
+	defp count_monsters(canvas) do
+		monster = [
+			"                  # ",
+			"#    ##    ##    ###",
+			" #  #  #  #  #  #   "
+		] |> parse_monster
+
+		{{{min_x, min_y}, _}, {{max_x, max_y}, _}} =
+			canvas
+			|> Enum.min_max_by(fn {{x, y}, _pixel} -> x + y end)
+		
+		mapped_canvas = canvas |> Map.new
+		
+		serialized_map = 
+			for x <- min_x..max_x, y <- min_y..max_y do
+				Map.get(mapped_canvas, {x, y})
+			end
+
+		rotations_of({nil, monster})
+		|> Enum.map(fn {nil, monster} -> monster end)
+		|> Enum.map(fn monster -> count_monster_rotation(serialized_map, max_x - min_x, monster) end)
+	end
+
+	defp count_monster_rotation(serialized_map, map_width, monster) do
+		monster_width =
+			monster
+			|> Enum.map(fn {{x, y}, pixel} -> x end)
+			|> Enum.max
+		
+		monster_height =
+			monster
+			|> Enum.map(fn {{x, y}, pixel} -> y end)
+			|> Enum.max
+		
+		monster = Map.merge(monster, for x <- monster_width..(map_width - monster_width), y <- 0..monster_height do
+			{{x, y}, " "}
+		end |> Map.new)
+		
+		{{{min_x, min_y}, _}, {{max_x, max_y}, _}} =
+			monster
+			|> Enum.min_max_by(fn {{x, y}, _pixel} -> x + y end)
+		 
+	end
+
+	def parse_monster(encoded_data) do
+		data =
+			encoded_data
+			|> Enum.with_index
+			|> Enum.map(fn {row, y} ->
+				row
+				|> String.graphemes
+				|> Enum.with_index
+				|> Enum.map(fn {pixel, x} -> {{x, y}, pixel} end)
+			end)
+			|> List.flatten
+			|> Map.new
+	end
+
+	defp merge_all_tiles(canvas) do
+		canvas
+		|> Enum.map(fn {{tile_x, tile_y}, tile} -> 
+			tile
+			|> Enum.map(fn {{pixel_x, pixel_y}, pixel} -> 
+				{
+					{tile_x * 8 + pixel_x, tile_y * 8 + pixel_y}, pixel
+				} 
+			end)
+		end)
+		|> List.flatten
+	end
+
+	defp remove_edges_and_ids(canvas) do
+		canvas
+		|> Enum.reject(fn {_coords, {id, _data}} -> id == :edge end)
+		|> Enum.map(fn {coords, {_id, data}} -> 
+			{
+				coords,
+				data
+				|> Enum.reject(fn {{x, y}, _pixel} -> x == 0 or x == 9 or y == 0 or y == 9 end)
+				|> Enum.map(fn {{x, y}, pixel} -> {{x - 1, y - 1}, pixel} end)
+			}
+		end)	
 	end
 
 	defp filter_only_corners_id(canvas) do
@@ -69,10 +171,15 @@ defmodule Day20 do
 	end
 
 	defp rotate({id, data}) do
+		width =
+			data
+			|> Enum.map(fn {{x, y}, pixel} -> x end)
+			|> Enum.max
+
 		rotated = 
 			data
 			|> Enum.map(fn {{x, y}, pixel} ->
-				{{y, 9 - x}, pixel}
+				{{y, width - x}, pixel}
 			end)
 			|> Map.new
 
@@ -80,6 +187,11 @@ defmodule Day20 do
 	end
 
 	defp flip({id, data}) do
+		width =
+			data
+			|> Enum.map(fn {{x, y}, pixel} -> x end)
+			|> Enum.max
+
 		flipped =
 			data
 			|> Enum.map(fn {{x, y}, pixel} ->
@@ -159,15 +271,6 @@ defmodule Day20 do
 
 	defp pick_one_tile(_tile_bag = [first | rest]) do
 		{rest, %{{0, 0} => first}}
-	end
-
-	@doc """
-	## Examples
-		iex> Input.read(20) |> Day20.part2
-		:result
-	"""
-	def part2(_input) do
-		:result
 	end
 
 	defp parse_tiles(input) do
