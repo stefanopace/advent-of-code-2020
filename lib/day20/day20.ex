@@ -4,6 +4,7 @@ defmodule Day20 do
 		iex> Input.read("./lib/day20/input_example") |> Day20.part1
 		20899048083289
 
+		# test too slow
 		# iex> Input.read(20) |> Day20.part1
 		# 21599955909991
 	"""
@@ -21,8 +22,9 @@ defmodule Day20 do
 		iex> Input.read("./lib/day20/input_example") |> Day20.part2
 		273
 	
+		# test too slow
 		# iex> Input.read(20) |> Day20.part2
-		# :result
+		# 2495
 	"""
 	def part2(input) do
 		input
@@ -32,6 +34,13 @@ defmodule Day20 do
 		|> remove_edges_and_ids
 		|> merge_all_tiles
 		|> count_monsters
+		|> compute_sea_roughness
+	end
+
+	defp compute_sea_roughness({canvas, count}) do
+		canvas
+		|> Enum.count(fn {_coords, pixel} -> pixel == "#" end)
+		|> Kernel.-(count * 15)
 	end
 
 	defp count_monsters(canvas) do
@@ -41,55 +50,46 @@ defmodule Day20 do
 			" #  #  #  #  #  #   "
 		] |> parse_monster
 
-		{{{min_x, min_y}, _}, {{max_x, max_y}, _}} =
-			canvas
-			|> Enum.min_max_by(fn {{x, y}, _pixel} -> x + y end)
+		count =
+			rotations_of({nil, monster})
+			|> Enum.map(fn {nil, monster} -> monster end)
+			|> Enum.map(fn monster -> count_monster_rotation(canvas |> Map.new, monster) end)
+			|> Enum.sum
 		
-		mapped_canvas = canvas |> Map.new
-		
-		serialized_map = 
-			for x <- min_x..max_x, y <- min_y..max_y do
-				Map.get(mapped_canvas, {x, y})
-			end
-
-		rotations_of({nil, monster})
-		|> Enum.map(fn {nil, monster} -> monster end)
-		|> Enum.map(fn monster -> count_monster_rotation(serialized_map, max_x - min_x, monster) end)
+		{canvas, count}
 	end
 
-	defp count_monster_rotation(serialized_map, map_width, monster) do
+	defp count_monster_rotation(map, monster) do
 		monster_width =
 			monster
-			|> Enum.map(fn {{x, y}, pixel} -> x end)
+			|> Enum.map(fn {{x, _y}, _pixel} -> x end)
 			|> Enum.max
 		
 		monster_height =
 			monster
-			|> Enum.map(fn {{x, y}, pixel} -> y end)
+			|> Enum.map(fn {{_x, y}, _pixel} -> y end)
 			|> Enum.max
-		
-		monster = Map.merge(monster, for x <- monster_width..(map_width - monster_width), y <- 0..monster_height do
-			{{x, y}, " "}
-		end |> Map.new)
-		
-		{{{min_x, min_y}, _}, {{max_x, max_y}, _}} =
-			monster
-			|> Enum.min_max_by(fn {{x, y}, _pixel} -> x + y end)
-		 
+
+		map
+		|> Enum.count(fn {{x, y}, _} -> 
+			for dx <- 0..monster_width, dy <- 0..monster_height do
+				Map.get(monster, {dx, dy}) == " " or Map.get(monster, {dx, dy}) == Map.get(map, {x + dx, y + dy})
+			end
+			|> Enum.all?
+		end)
 	end
 
 	def parse_monster(encoded_data) do
-		data =
-			encoded_data
+		encoded_data
+		|> Enum.with_index
+		|> Enum.map(fn {row, y} ->
+			row
+			|> String.graphemes
 			|> Enum.with_index
-			|> Enum.map(fn {row, y} ->
-				row
-				|> String.graphemes
-				|> Enum.with_index
-				|> Enum.map(fn {pixel, x} -> {{x, y}, pixel} end)
-			end)
-			|> List.flatten
-			|> Map.new
+			|> Enum.map(fn {pixel, x} -> {{x, y}, pixel} end)
+		end)
+		|> List.flatten
+		|> Map.new
 	end
 
 	defp merge_all_tiles(canvas) do
@@ -173,7 +173,7 @@ defmodule Day20 do
 	defp rotate({id, data}) do
 		width =
 			data
-			|> Enum.map(fn {{x, y}, pixel} -> x end)
+			|> Enum.map(fn {{x, _y}, _pixel} -> x end)
 			|> Enum.max
 
 		rotated = 
@@ -189,13 +189,13 @@ defmodule Day20 do
 	defp flip({id, data}) do
 		width =
 			data
-			|> Enum.map(fn {{x, y}, pixel} -> x end)
+			|> Enum.map(fn {{x, _y}, _pixel} -> x end)
 			|> Enum.max
 
 		flipped =
 			data
 			|> Enum.map(fn {{x, y}, pixel} ->
-				{{9 - x, y}, pixel}
+				{{width - x, y}, pixel}
 			end)
 			|> Map.new
 		
