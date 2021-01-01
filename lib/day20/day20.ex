@@ -12,6 +12,23 @@ defmodule Day20 do
 		|> parse_tiles
 		|> pick_one_tile
 		|> connect_other_tiles
+		|> filter_only_corners_id
+		|> Enum.reduce(&(&1 * &2))
+	end
+
+	defp filter_only_corners_id(canvas) do
+		canvas = 
+			canvas
+			|> Enum.reject(fn {_coords, {id, _data}} -> id == :edge end)
+			|> Enum.map(fn {coords, {id, _data}} -> {coords, id} end)
+		
+		[
+			canvas |> Enum.min_by(fn {{x, y}, _id} -> x + y end),
+			canvas |> Enum.min_by(fn {{x, y}, _id} -> x - y end),
+			canvas |> Enum.min_by(fn {{x, y}, _id} -> -x + y end),
+			canvas |> Enum.min_by(fn {{x, y}, _id} -> -x - y end)
+		]
+		|> Enum.map(fn {_coords, id} -> id end)
 	end
 
 	defp connect_other_tiles({[], canvas}) do
@@ -21,17 +38,23 @@ defmodule Day20 do
 		canvas
 		|> find_a_tile_missing_a_neighbor
 		|> find_the_missing_neighbor(tile_bag)
+		|> connect_other_tiles
 	end
 
-	defp find_the_missing_neighbor({canvas, {{{x, y}, tile}, direction}}, tile_bag) do
-		neighbor = 
+	defp find_the_missing_neighbor({canvas, {{{x, y}, tile}, direction = {dx, dy}}}, tile_bag) do
+		neighbor = {neighbor_id, _data} = 
 			tile_bag
 			|> Enum.find_value(
-				:edge, 
+				{:edge, nil}, 
 				fn tile_in_the_bag -> 
 					rotations_of(tile_in_the_bag)
 					|> Enum.find(false, fn rotated_tile -> tile |> connects?(rotated_tile, direction) end)
 				end)
+			
+		{
+			tile_bag |> Enum.reject(fn {id, _data} -> id == neighbor_id end), 
+			Map.put(canvas, {x + dx, y + dy}, neighbor)
+		}
 	end
 
 	defp rotations_of(tile) do
@@ -74,7 +97,6 @@ defmodule Day20 do
 			{0, 1} -> connects_bottom?(tile1, tile2)
 			{-1, 0} -> connects_left?(tile1, tile2)
 		end
-		true
 	end
 
 	defp connects_top?(tile1, tile2) do
@@ -93,15 +115,38 @@ defmodule Day20 do
 		left_border(tile1) == right_border(tile2)
 	end
 
-	defp top_border(tile) do
+	defp top_border({_id, tile}) do
 		tile
-		|> Enum.filter(fn {{_x, y}, pixel} -> y == 0 end)
-		|> Enum.map(fn {{x, y}, pixel})
+		|> Enum.filter(fn {{_x, y}, _pixel} -> y == 0 end)
+		|> Enum.map(fn {{x, _y}, pixel} -> {x, pixel} end)
+		|> Map.new
+	end
+
+	defp bottom_border({_id, tile}) do
+		tile
+		|> Enum.filter(fn {{_x, y}, _pixel} -> y == 9 end)
+		|> Enum.map(fn {{x, _y}, pixel} -> {x, pixel} end)
+		|> Map.new
+	end
+
+	defp left_border({_id, tile}) do
+		tile
+		|> Enum.filter(fn {{x, _y}, _pixel} -> x == 0 end)
+		|> Enum.map(fn {{_x, y}, pixel} -> {y, pixel} end)
+		|> Map.new
+	end
+
+	defp right_border({_id, tile}) do
+		tile
+		|> Enum.filter(fn {{x, _y}, _pixel} -> x == 9 end)
+		|> Enum.map(fn {{_x, y}, pixel} -> {y, pixel} end)
+		|> Map.new
 	end
 
 	defp find_a_tile_missing_a_neighbor(canvas) do
 		canvas
-		|> Enum.find_value(fn tile = {{x, y}, data} ->
+		|> Enum.reject(fn {_coords, {id, _data}} -> id == :edge end)
+		|> Enum.find_value(fn tile = {{x, y}, _data} ->
 			missing = 
 				[{0, -1}, {1, 0}, {0, 1}, {-1, 0}]
 				|> Enum.find(fn {dx, dy} -> 
