@@ -11,22 +11,23 @@ defmodule Day23 do
 		62934785
 	"""
 	def part1(input, moves_count) do
-		Stream.iterate(input, &(move(&1, 9)))
+		input
+		|> Stream.iterate(&(move(&1, 9)))
 		|> Enum.at(moves_count)
 		|> collect
 	end
 
 	@doc """
 	## Examples
-		iex> Day23.part2(389125467 |> Integer.digits, 1)
+		iex> Day23.part2(389125467 |> Integer.digits, 100)
 		149245887792
 
 		# iex> Day23.part2(198753462 |> Integer.digits, 1000)
 		# :result
 	"""
 	def part2(input, moves_count) do
-		input ++ ( 10..999_999 |> Enum.to_list )
-		|> Stream.iterate(&(move(&1, 999_999)))
+		input ++ ( 10..1_000_000 |> Enum.to_list )
+		|> Stream.iterate(&(move(&1, 1_000_000)))
 		|> Enum.at(moves_count)
 		# |> find_response
 	end
@@ -41,31 +42,23 @@ defmodule Day23 do
 
 	defp move([current_cup, a, b, c | rest], max_cups) do
 		picked_up = [a, b, c]
-		circle = [current_cup | rest]
 
 		destination_cup =
 			1..max_cups
 			|> Stream.map(&(current_cup - &1))
 			|> Stream.map(fn label -> if label < 1, do: label + max_cups, else: label end)
-			|> Enum.find(fn label -> Enum.member?(circle, label) end)
+			|> Enum.find(fn label -> not Enum.member?(picked_up, label) end)
 		
 		rest
-		|> Enum.reduce([], fn cup, merged ->
-			case cup do
-				^destination_cup -> (picked_up |> Enum.reverse) ++ [destination_cup | merged]
-				other_cup -> [other_cup | merged]
-			end
-		end)
+		|> position_picked_up_cups([], picked_up, destination_cup)
 		|> (&([current_cup | &1])).()
 		|> Enum.reverse
 	end
 
-	@doc """
-	## Examples
-		iex> Input.read(23) |> Day23.part2
-		:result
-	"""
-	def part2(_input) do
-		:result
+	defp position_picked_up_cups([label | rest], merged, picked_up, destination_cup) do
+		case label do
+			^destination_cup -> (rest |> Enum.reverse) ++ (picked_up |> Enum.reverse) ++ [destination_cup | merged]
+			_other_cup -> position_picked_up_cups(rest, [label | merged], picked_up, destination_cup)
+		end
 	end
 end
