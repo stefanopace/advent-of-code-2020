@@ -40,6 +40,39 @@ defmodule Day21 do
 			end)
 	end
 
+	@doc """
+	## Examples
+		iex> [
+		...>	"mxmxvkd kfcds sqjhc nhms (contains dairy, fish)",
+		...>	"trh fvjkl sbzzf mxmxvkd (contains dairy)",
+		...>	"sqjhc fvjkl (contains soy)",
+		...>	"sqjhc mxmxvkd sbzzf (contains fish)"
+		...> ] |> Day21.part2
+		"mxmxvkd,sqjhc,fvjkl"
+
+		iex> Input.read(21) |> Day21.part2
+		"zfcqk,mdtvbb,ggdbl,frpvd,mgczn,zsfzq,kdqls,kktsjbh"
+	"""
+	def part2(input) do
+		list =
+			input
+			|> decode
+		
+		allergenes_map =
+			list
+			|> rearrange
+			|> intersect
+			|> exclude([])
+		
+		allergenes_map
+		|> Enum.map(fn {allergene, ingredient} -> 
+			{allergene, MapSet.to_list(ingredient) |> List.first}
+		end)
+		|> Enum.sort_by(fn {allergene, _ingreidient} -> allergene end)
+		|> Enum.map(fn {_allergene, ingredient} -> ingredient end)
+		|> Enum.join(",")
+	end
+
 	def exclude([], sure), do: sure
 	def exclude(dubious, sure) do
 
@@ -57,7 +90,7 @@ defmodule Day21 do
 		
 		sure2 =
 			dubious
-			|> Enum.filter(fn {allergene, ingredients} -> 
+			|> Enum.filter(fn {_allergene, ingredients} -> 
 				MapSet.size(ingredients) == 1
 			end)
 		
@@ -103,12 +136,4 @@ defmodule Day21 do
 		end)
 	end
 
-	@doc """
-	## Examples
-		iex> Input.read(21) |> Day21.part2
-		:result
-	"""
-	def part2(_input) do
-		:result
-	end
 end
