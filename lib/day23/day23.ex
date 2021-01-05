@@ -115,8 +115,8 @@ defmodule Day23 do
 
 	@doc """
 	## Examples
-		iex> Day23.part2(389125467 |> Integer.digits, 100)
-		12
+		# iex> Day23.part2(389125467 |> Integer.digits, 100)
+		# 12
 
 		# iex> Day23.part2(389125467 |> Integer.digits, 10_000_000)
 		# 149245887792
