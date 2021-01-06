@@ -9,11 +9,13 @@ defmodule Day5.Part2 do
 	"""
 	def solve(input) do
 		input
-		|> Enum.map(&Part1.decode_ticket/1)
-		|> Enum.sort_by(fn {_row, _col, id, _code} -> id end)
+		|> Enum.map(&Part1.decode_ticket_id/1)
+		|> Enum.sort
 		|> Enum.chunk_every(2, 1, :discard)
-		|> Enum.find(fn [{_, _, l, _}, {_, _, r, _}] -> r - l != 1 end)
-		|> (fn [{_, _, l, _}, {_, _, _, _}] -> l + 1 end).()
+		|> Enum.find_value(fn 
+			[prev, next] when next - prev != 1 -> prev + 1
+			__________________________________ -> false 
+		end)
 	end
 
 end
