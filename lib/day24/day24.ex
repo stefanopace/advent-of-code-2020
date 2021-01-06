@@ -36,6 +36,52 @@ defmodule Day24 do
 		|> Enum.count(fn {_, color} -> color == :black end)
 	end
 
+	@doc """
+	## Examples
+		iex> [
+		...>	"sesenwnenenewseeswwswswwnenewsewsw",
+		...>	"neeenesenwnwwswnenewnwwsewnenwseswesw",
+		...>	"seswneswswsenwwnwse",
+		...>	"nwnwneseeswswnenewneswwnewseswneseene",
+		...>	"swweswneswnenwsewnwneneseenw",
+		...>	"eesenwseswswnenwswnwnwsewwnwsene",
+		...>	"sewnenenenesenwsewnenwwwse",
+		...>	"wenwwweseeeweswwwnwwe",
+		...>	"wsweesenenewnwwnwsenewsenwwsesesenwne",
+		...>	"neeswseenwwswnwswswnw",
+		...>	"nenwswwsewswnenenewsenwsenwnesesenew",
+		...>	"enewnwewneswsewnwswenweswnenwsenwsw",
+		...>	"sweneswneswneneenwnewenewwneswswnese",
+		...>	"swwesenesewenwneswnwwneseswwne",
+		...>	"enesenwswwswneneswsenwnewswseenwsese",
+		...>	"wnwnesenesenenwwnenwsewesewsesesew",
+		...>	"nenewswnwewswnenesenwnesewesw",
+		...>	"eneswnwswnwsenenwnwnwwseeswneewsenese",
+		...>	"neswnwewnwnwseenwseesewsenwsweewe",
+		...>	"wseweeenwnesenwwwswnew"
+		...> ] |> Day24.part2
+		2208
+
+		# iex> Input.read(24) |> Day24.part2
+		# :result
+	"""
+	def part2(input) do
+		day0_floor = 
+			input
+			|> Enum.map(&decode_directions/1)
+			|> Enum.reduce({%{}, {0, 0}}, &flip_tile/2)
+			|> elem(0)
+		
+		day0_floor
+		|> Stream.iterate(&apply_rules/1)
+		|> Enum.at(100)
+		|> Enum.count(fn {_, color} -> color == :black end)
+	end
+
+	defp apply_rules(floor) do
+		floor
+	end
+
 	defp flip_tile([], {floor, current_tile}) do
 		case floor[current_tile] do
 			:black -> {Map.put(floor, current_tile, :white), {0, 0}}
@@ -65,14 +111,5 @@ defmodule Day24 do
 			["e" | rest] -> decode_directions(rest, [:east | decoded])
 			["w" | rest] -> decode_directions(rest, [:west | decoded])
 		end
-	end
-
-	@doc """
-	## Examples
-		iex> Input.read(24) |> Day24.part2
-		:result
-	"""
-	def part2(_input) do
-		:result
 	end
 end
