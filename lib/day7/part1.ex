@@ -13,13 +13,13 @@ defmodule Day7.Part1 do
 	end
 
 	defp find_possible_outmosts_of(rules, color) when is_bitstring(color), do: rules |> find_possible_outmosts_of([[color]])
-	
-	defp find_possible_outmosts_of(rules, [ current_colors | _prev ] = acc) do
-		case current_colors do
-			[] -> acc |> List.flatten |> Enum.sort |> Enum.dedup
-			colors -> rules |> find_possible_outmosts_of([Enum.flat_map(colors, fn color -> find_bags_that_can_contain(rules, color) end) | acc])
-		end
+	defp find_possible_outmosts_of(rules, [ [] | _prev ] = acc) do
+		acc |> List.flatten |> Enum.sort |> Enum.dedup
 	end
+	defp find_possible_outmosts_of(rules, [ current_colors | _prev ] = acc) do
+		rules |> find_possible_outmosts_of([Enum.flat_map(current_colors, fn color -> find_bags_that_can_contain(rules, color) end) | acc])
+	end
+	
 
 	defp find_bags_that_can_contain(rules, color) do
 		rules
