@@ -1,4 +1,5 @@
 defmodule Day7.Part1 do
+
 	@doc """
 	## Examples
 		iex> Input.read("./lib/day7/input") |> Day7.Part1.solve
