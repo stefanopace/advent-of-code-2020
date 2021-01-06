@@ -12,7 +12,8 @@ defmodule AdventOfCode2020Test do
   doctest Day5.Part2
   doctest Day6.Part1
   doctest Day6.Part2
-  doctest Day7
+  doctest Day7.Part1
+  doctest Day7.Part2
   doctest Day8
   doctest Day9
   doctest Day10

@@ -1,10 +1,10 @@
-defmodule Day7 do
+defmodule Day7.Part1 do
 	@doc """
 	## Examples
-		iex> Input.read(7) |> Day7.part1
+		iex> Input.read("./lib/day7/input") |> Day7.Part1.solve
 		148
 	"""
-	def part1(input) do
+	def solve(input) do
 		input
 		|> Enum.map(&decode_rule/1)
 		|> find_outmosts([["shiny gold"]])
@@ -28,7 +28,7 @@ defmodule Day7 do
 		|> Enum.map(fn {color, _} -> color end)
 	end
 
-	defp decode_rule(row) do
+	def decode_rule(row) do
 		[out, inside_list] = String.split(row, " bags contain ")
 		inside = 
 			String.split(inside_list, ", ")
@@ -45,25 +45,4 @@ defmodule Day7 do
 		{out, inside}
 	end
 
-	@doc """
-	## Examples
-		iex> Input.read(7) |> Day7.part2
-		24867
-	"""
-	def part2(input) do
-		input
-		|> Enum.map(&decode_rule/1)
-		|> count_bags("shiny gold")
-		|> Kernel.-(1)
-	end
-
-	defp count_bags(rules_list, color_name) do
-		{_color, rules} = rules_list |> Enum.find(fn {col, _rul} -> col == color_name end)
-		case rules do
-			[] -> 1
-			rules -> Enum.map(rules, fn {count, in_color} -> 
-				count * count_bags(rules_list, in_color) 
-			end) |> Enum.sum |> Kernel.+(1)
-		end
-	end
 end
