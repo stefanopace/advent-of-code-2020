@@ -8,9 +8,13 @@ defmodule Day6.Part2 do
 	def solve(input) do
 		input
 		|> Input.split_on_blank_lines
-		|> Enum.map(fn group -> group |> Enum.map(fn resp -> resp |> String.graphemes |> MapSet.new end) end)
-		|> Enum.map(fn group -> group |> Enum.reduce(fn resp, acc -> MapSet.intersection(resp, acc) end) end)
-		|> Enum.map(&Enum.count/1)
+		|> Enum.map(fn group -> 
+			group
+			|> Enum.map(&String.graphemes/1)
+			|> Enum.map(&MapSet.new/1) 
+			|> Enum.reduce(&MapSet.intersection/2) 
+			|> MapSet.size
+		end)
 		|> Enum.sum
 	end
 
