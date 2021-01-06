@@ -23,10 +23,12 @@ defmodule Day7.Part1 do
 
 	defp find_bags_that_can_contain(rules, color) do
 		rules
-		|> Enum.filter(fn{_c, rule} -> 
-			Enum.any?(rule, fn {_count, in_color} -> in_color == color end) 
+		|> Enum.filter(fn {_container, inside_bags} -> 
+			inside_bags
+			|> Enum.map(&(elem(&1, 1)))
+			|> Enum.any?(&(&1 == color)) 
 		end)
-		|> Enum.map(fn {color, _} -> color end)
+		|> Enum.map(fn {container_color, _inside_colors} -> container_color end)
 	end
 
 	def decode_rule(row) do
