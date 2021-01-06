@@ -62,8 +62,8 @@ defmodule Day24 do
 		...> ] |> Day24.part2
 		2208
 
-		# iex> Input.read(24) |> Day24.part2
-		# :result
+		iex> Input.read(24) |> Day24.part2
+		3711
 	"""
 	def part2(input) do
 		day0_floor = 
@@ -80,13 +80,62 @@ defmodule Day24 do
 
 	defp apply_rules(floor) do
 		floor
+		|> reset_counters
+		|> count_black_neighbors
+		|> update_colors
+	end
+
+	defp update_colors(floor) do
+		floor
+		|> Enum.map(
+			fn 
+				{coords, {:black, count}} ->
+					cond do
+						count == 0 or count > 2 -> {coords, :white}
+						true -> {coords, :black}
+					end
+				{coords, {:white, count}} ->
+					cond do
+						count == 2 -> {coords, :black}
+						true -> {coords, :white}
+					end
+			end
+		)
+		|> Map.new
+	end
+
+	defp count_black_neighbors(floor) do
+		floor
+		|> Enum.reduce(floor, fn 
+			{______, {:white, _}}, floor -> floor
+			{{x, y}, {:black, _}}, floor -> 
+				[{0, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, 0}, {-1, 1}] 
+				|> Enum.reduce(floor, 
+					fn ({dx, dy}, floor) -> 
+						floor
+						|> Map.update({x + dx, y + dy}, {:white, 1}, 
+							fn {color, count} ->
+								{color, count + 1} 
+							end
+						)
+					end
+				)
+		end)
+	end
+
+	defp reset_counters(floor) do
+		floor
+		|> Enum.map(fn 
+			{coords, color} -> {coords, {color, 0}}
+		end)
+		|> Map.new
 	end
 
 	defp flip_tile([], {floor, current_tile}) do
 		case floor[current_tile] do
 			:black -> {Map.put(floor, current_tile, :white), {0, 0}}
 			:white -> {Map.put(floor, current_tile, :black), {0, 0}}
-			_ -> {Map.put(floor, current_tile, :black), {0, 0}}
+			______ -> {Map.put(floor, current_tile, :black), {0, 0}}
 		end
 	end
 	defp flip_tile([current_direction | rest], {floor, {x, y}}) do
