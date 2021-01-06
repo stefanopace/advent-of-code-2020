@@ -25,16 +25,36 @@ defmodule Day24 do
 		...> ] |> Day24.part1
 		10
 
-		# iex> Input.read(24) |> Day24.part1
-		# :result
+		iex> Input.read(24) |> Day24.part1
+		330
 	"""
 	def part1(input) do
 		input
-		|> Enum.map(&String.graphemes/1)
 		|> Enum.map(&decode_directions/1)
+		|> Enum.reduce({%{}, {0, 0}}, &flip_tile/2)
+		|> elem(0)
+		|> Enum.count(fn {_, color} -> color == :black end)
 	end
 
-	defp decode_directions(encoded), do: decode_directions(encoded, [])
+	defp flip_tile([], {floor, current_tile}) do
+		case floor[current_tile] do
+			:black -> {Map.put(floor, current_tile, :white), {0, 0}}
+			:white -> {Map.put(floor, current_tile, :black), {0, 0}}
+			_ -> {Map.put(floor, current_tile, :black), {0, 0}}
+		end
+	end
+	defp flip_tile([current_direction | rest], {floor, {x, y}}) do
+		case current_direction do
+			:north_east -> flip_tile(rest, {floor, {x, y + 1}})
+			:east -> flip_tile(rest, {floor, {x + 1, y}})
+			:south_east -> flip_tile(rest, {floor, {x + 1, y - 1}})
+			:south_west -> flip_tile(rest, {floor, {x, y - 1}})
+			:west -> flip_tile(rest, {floor, {x - 1, y}})
+			:north_west -> flip_tile(rest, {floor, {x - 1, y + 1}})
+		end
+	end
+
+	defp decode_directions(encoded), do: decode_directions(encoded |> String.graphemes, [])
 	defp decode_directions(encoded, decoded) do
 		case encoded do
 			[] -> decoded |> Enum.reverse
