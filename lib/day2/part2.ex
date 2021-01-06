@@ -3,7 +3,7 @@ alias Day2.Part1, as: Part1
 defmodule Day2.Part2 do
 @doc """
 	## Examples
-		iex> Input.read(2) |> Day2.Part2.solve
+		iex> Input.read("./lib/day2/input") |> Day2.Part2.solve
 		688
 	
 		iex> [
