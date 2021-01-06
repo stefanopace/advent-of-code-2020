@@ -8,7 +8,7 @@ defmodule Day7.Part1 do
 		input
 		|> Enum.map(&decode_rule/1)
 		|> find_outmosts([["shiny gold"]])
-		|> Enum.filter(fn col -> col != "shiny gold" end)
+		|> Enum.filter(&(&1 != "shiny gold"))
 		|> Enum.count
 	end
 
@@ -29,20 +29,19 @@ defmodule Day7.Part1 do
 	end
 
 	def decode_rule(row) do
-		[out, inside_list] = String.split(row, " bags contain ")
+		[outside, inside_encoded] = row |> String.split(" bags contain ")
 		inside = 
-			String.split(inside_list, ", ")
+			inside_encoded
+			|> String.split(", ")
 			|> Enum.map(fn rule ->
-				case Regex.run(~r"([0-9]+) (.*) bag.?", rule) do
-					[_all, count, color] -> 
-						{count, _rest} = Integer.parse(count, 10)
-						{count, color}
-					_ -> :empty
+				case rule |> Input.regex_match(~r"([0-9]+) (.*) bag.?") do
+					{count, color} -> {String.to_integer(count), color}
+					______________ -> :empty
 				end
 			end)
 			|> Enum.filter(&(&1 != :empty))
 		
-		{out, inside}
+		{outside, inside}
 	end
 
 end
