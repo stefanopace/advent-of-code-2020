@@ -5,21 +5,21 @@ defmodule Day7.Part1 do
 		148
 	"""
 	def solve(input) do
-		input
-		|> Enum.map(&decode_rule/1)
-		|> find_possible_outmosts_of("shiny gold")
+		rules =
+			input
+			|> Enum.map(&decode_rule/1)
+		
+		["shiny gold"]
+		|> Stream.iterate(fn colors ->
+			colors 
+			|> Enum.flat_map(&(rules |> find_bags_that_can_contain(&1)))
+		end)
+		|> Enum.take_while(&Enum.any?/1)
+		|> List.flatten
+		|> MapSet.new
 		|> MapSet.delete("shiny gold")
 		|> MapSet.size
 	end
-
-	defp find_possible_outmosts_of(rules, color) when is_bitstring(color), do: rules |> find_possible_outmosts_of([[color]])
-	defp find_possible_outmosts_of(_rules, [ [] | colors ]) do
-		colors |> List.flatten |> MapSet.new
-	end
-	defp find_possible_outmosts_of(rules, [ current_colors | _prev ] = acc) do
-		rules |> find_possible_outmosts_of([Enum.flat_map(current_colors, fn color -> find_bags_that_can_contain(rules, color) end) | acc])
-	end
-	
 
 	defp find_bags_that_can_contain(rules, color) do
 		rules
