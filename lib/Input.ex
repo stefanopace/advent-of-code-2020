@@ -9,6 +9,12 @@ defmodule Input do
 		String.split(input, "\n")
 	end
 
+	def to_integers(str_integers), do: str_integers |> Stream.map(&String.to_integer/1)
+
+	def regex_match(string, regex) do
+		Regex.run(regex, string) |> tl |> List.to_tuple
+	end
+
 	def split_on_blank_lines(list) do
 		list
 		|> Enum.chunk_while([], 
