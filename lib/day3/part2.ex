@@ -8,7 +8,7 @@ defmodule Day3.Part2 do
 	"""
 	def solve(input) do
 		[{1, 1}, {3, 1}, {5, 1}, {7, 1}, {1, 2}]
-		|> Enum.map(fn {h, v} -> Part1.count_trees(input, h, v) end)
-		|> Enum.reduce(1, fn (cur, mul) -> mul * cur end)
+		|> Enum.map(fn {h_pace, v_pace} -> Part1.count_trees(input, h_pace, v_pace) end)
+		|> Enum.reduce(&(&1 * &2))
 	end
 end
