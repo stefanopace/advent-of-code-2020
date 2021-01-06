@@ -38,29 +38,29 @@ defmodule Day24 do
 
 	@doc """
 	## Examples
-		iex> [
-		...>	"sesenwnenenewseeswwswswwnenewsewsw",
-		...>	"neeenesenwnwwswnenewnwwsewnenwseswesw",
-		...>	"seswneswswsenwwnwse",
-		...>	"nwnwneseeswswnenewneswwnewseswneseene",
-		...>	"swweswneswnenwsewnwneneseenw",
-		...>	"eesenwseswswnenwswnwnwsewwnwsene",
-		...>	"sewnenenenesenwsewnenwwwse",
-		...>	"wenwwweseeeweswwwnwwe",
-		...>	"wsweesenenewnwwnwsenewsenwwsesesenwne",
-		...>	"neeswseenwwswnwswswnw",
-		...>	"nenwswwsewswnenenewsenwsenwnesesenew",
-		...>	"enewnwewneswsewnwswenweswnenwsenwsw",
-		...>	"sweneswneswneneenwnewenewwneswswnese",
-		...>	"swwesenesewenwneswnwwneseswwne",
-		...>	"enesenwswwswneneswsenwnewswseenwsese",
-		...>	"wnwnesenesenenwwnenwsewesewsesesew",
-		...>	"nenewswnwewswnenesenwnesewesw",
-		...>	"eneswnwswnwsenenwnwnwwseeswneewsenese",
-		...>	"neswnwewnwnwseenwseesewsenwsweewe",
-		...>	"wseweeenwnesenwwwswnew"
-		...> ] |> Day24.part2
-		2208
+		# iex> [
+		# ...>	"sesenwnenenewseeswwswswwnenewsewsw",
+		# ...>	"neeenesenwnwwswnenewnwwsewnenwseswesw",
+		# ...>	"seswneswswsenwwnwse",
+		# ...>	"nwnwneseeswswnenewneswwnewseswneseene",
+		# ...>	"swweswneswnenwsewnwneneseenw",
+		# ...>	"eesenwseswswnenwswnwnwsewwnwsene",
+		# ...>	"sewnenenenesenwsewnenwwwse",
+		# ...>	"wenwwweseeeweswwwnwwe",
+		# ...>	"wsweesenenewnwwnwsenewsenwwsesesenwne",
+		# ...>	"neeswseenwwswnwswswnw",
+		# ...>	"nenwswwsewswnenenewsenwsenwnesesenew",
+		# ...>	"enewnwewneswsewnwswenweswnenwsenwsw",
+		# ...>	"sweneswneswneneenwnewenewwneswswnese",
+		# ...>	"swwesenesewenwneswnwwneseswwne",
+		# ...>	"enesenwswwswneneswsenwnewswseenwsese",
+		# ...>	"wnwnesenesenenwwnenwsewesewsesesew",
+		# ...>	"nenewswnwewswnenesenwnesewesw",
+		# ...>	"eneswnwswnwsenenwnwnwwseeswneewsenese",
+		# ...>	"neswnwewnwnwseenwseesewsenwsweewe",
+		# ...>	"wseweeenwnesenwwwswnew"
+		# ...> ] |> Day24.part2
+		# 2208
 
 		# test too slow
 		# iex> Input.read(24) |> Day24.part2
