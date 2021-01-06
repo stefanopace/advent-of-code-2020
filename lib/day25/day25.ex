@@ -4,8 +4,9 @@ defmodule Day25 do
 		iex> Day25.part1(5764801, 17807724)
 		14897079
 
-		iex> Day25.part1(12320657, 9659666)
-		6421487
+		# test too slow
+		# iex> Day25.part1(12320657, 9659666)
+		# 6421487
 	"""
 	def part1(card_public_key, door_public_key) do
 		subject_number = 7

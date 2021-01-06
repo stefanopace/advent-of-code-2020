@@ -8,12 +8,11 @@ defmodule Day1 do
 		776064
 	"""
 	def part1(input) do
-		numbers =
+		{x, y} =
 			input
-			|> Enum.map(&Integer.parse/1)
-			|> Enum.map(fn {parsed, _rest} -> parsed end)
-		pairs = for x <- numbers, y <- numbers, do: {x, y}
-		{x, y} = Enum.find(pairs, fn {x, y} -> x + y == 2020 end)
+			|> Stream.map(&String.to_integer/1)
+			|> (&(for x <- &1, y <- &1, do: {x, y})).()
+			|> Enum.find(fn {x, y} -> x + y == 2020 end)
 		x * y
 	end
 
