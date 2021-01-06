@@ -62,8 +62,9 @@ defmodule Day24 do
 		...> ] |> Day24.part2
 		2208
 
-		iex> Input.read(24) |> Day24.part2
-		3711
+		# test too slow
+		# iex> Input.read(24) |> Day24.part2
+		# 3711
 	"""
 	def part2(input) do
 		day0_floor = 
