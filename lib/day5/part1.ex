@@ -1,32 +1,18 @@
-defmodule Day5 do
+defmodule Day5.Part1 do
 
 	@doc """
 	## Examples
-		iex> Input.read(5) |> Day5.part1
+		iex> Input.read("./lib/day5/input") |> Day5.Part1.solve
 		888
 	"""
-	def part1(input) do
+	def solve(input) do
 		input
 		|> Enum.map(&decode/1)
 		|> Enum.max_by(fn {_row, _col, id, _code} -> id end)
 		|> elem(2)
 	end
 
-	@doc """
-	## Examples
-		iex> Input.read(5) |> Day5.part2
-		522
-	"""
-	def part2(input) do
-		input
-		|> Enum.map(&decode/1)
-		|> Enum.sort_by(fn {_row, _col, id, _code} -> id end)
-		|> Enum.chunk_every(2, 1, :discard)
-		|> Enum.find(fn [{_, _, l, _}, {_, _, r, _}] -> r - l != 1 end)
-		|> (fn [{_, _, l, _}, {_, _, _, _}] -> l + 1 end).()
-	end
-
-	defp decode(code) do
+	def decode(code) do
 		{row_encoded, col_encoded} = String.split_at(code, 7)
 		row = 
 			row_encoded
