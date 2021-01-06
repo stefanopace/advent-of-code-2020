@@ -8,20 +8,19 @@ defmodule Day3.Part1 do
 		count_trees(input, 3, 1)
 	end
 
-	def count_trees(input, horizontale_move, vertical_move) do
+	def count_trees(input, horizontal_move, vertical_move) do
 		input
 		|> Enum.take_every(vertical_move)
-		|> Enum.reduce(
-			{0, []},
-			fn (current, {cursor, prev}) ->
-				{
-					rem(cursor + horizontale_move, String.length(current)),
-					[String.at(current, cursor) | prev]
+		|> Enum.map_reduce(0,
+			fn (current, cursor) ->
+				{	
+					String.at(current, cursor),
+					rem(cursor + horizontal_move, String.length(current))
 				}
 			end
 		)
-		|> elem(1)
+		|> elem(0)
 		|> Enum.count(&(&1 == "#"))
-	end	
+	end
 
 end
