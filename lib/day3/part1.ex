@@ -12,8 +12,7 @@ defmodule Day3.Part1 do
 	def count_trees(input, horizontal_pace, vertical_pace) do
 		input
 		|> Enum.take_every(vertical_pace)
-		|> Enum.map_reduce(0, &(move_horizontally(&1, &2, horizontal_pace)))
-		|> elem(0)
+		|> Enum.map_reduce(0, &(move_horizontally(&1, &2, horizontal_pace))) |> elem(0)
 		|> Enum.count(&(&1 == "#"))
 	end
 
