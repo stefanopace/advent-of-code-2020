@@ -17,8 +17,8 @@ defmodule Day8.Part2 do
 		case length(program) do
 			^cur -> acc
 			_ -> case program |> Part1.instruction_at(cur) do
-					{_, _, true} -> :wrong_path
-					{cmd, val, _} ->
+					%{visited: true} -> :wrong_path
+					%{instruction: cmd, value: val} ->
 						traverse(Part1.mark_as_visited(program, cur), next_state(cmd, val, cur, acc, fixed))
 						|> case do
 							result when cmd == :acc -> result
