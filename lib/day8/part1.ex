@@ -6,38 +6,32 @@ defmodule Day8.Part1 do
 		1600
 	"""
 	def solve(input) do
-		input
-		|> Enum.map(&decode_instruction/1)
-		|> find_loop(%{cursor: 0, accumulator: 0})
+		%{
+			instructions: input |> Enum.map(&decode_instruction/1),
+			cursor: 0,
+			accumulator: 0
+		}
+		|> Stream.iterate(&execute_instruction/1)
+		|> Enum.find(&already_visited_instruction/1)
+		|> Map.get(:accumulator)
 	end
 
-	defp find_loop(program, state = %{cursor: cursor, accumulator: acc}) do
-		case program |> instruction_at(cursor) do
-			%{visited: true} -> acc
+	defp execute_instruction(%{instructions: instructions, cursor: cursor, accumulator: accumulator} = state) do
+		case instructions |> Enum.at(cursor) do
+			%{instruction: :nop} -> %{state | cursor: cursor + 1}
 			%{instruction: :jmp, value: distance} -> 
-				find_loop(
-					program |> mark_as_visited(cursor), 
-					state |> move_cursor(distance)
-				)
+				%{
+					instructions: instructions |> mark_as_visited(cursor),
+					cursor: cursor + distance,
+					accumulator: accumulator
+				}
 			%{instruction: :acc, value: increment} -> 
-				find_loop(
-					program |> mark_as_visited(cursor), 
-					state |> add_to_accumulator(increment) |> move_cursor(1)
-				)
-			%{instruction: :nop} -> 
-				find_loop(
-					program |> mark_as_visited(cursor), 
-					state |> move_cursor(1)
-				)
+				%{
+					instructions: instructions |> mark_as_visited(cursor),
+					cursor: cursor + 1,
+					accumulator: accumulator + increment
+				}
 		end
-	end
-
-	defp move_cursor(state, distance) do
-		state |> Map.update!(:cursor, &(&1 + distance))
-	end
-
-	defp add_to_accumulator(state, increment) do
-		state |> Map.update!(:accumulator, &(&1 + increment))
 	end
 
 	def decode_instruction(encoded) do
@@ -49,12 +43,12 @@ defmodule Day8.Part1 do
 		} 
 	end
 
-	def instruction_at(program, cursorsor) do
-		program |> Enum.at(cursorsor)
+	defp already_visited_instruction(%{instructions: instructions, cursor: cursor}) do
+		instructions |> Enum.at(cursor) |> Map.get(:visited)
 	end
 
-	def mark_as_visited(program, index) do
-		program |> List.replace_at(index, %{instruction: nil, value: nil, visited: true})
+	def mark_as_visited(instructions, index) do
+		instructions |> List.replace_at(index, %{instruction: nil, value: nil, visited: true})
 	end
 
 end
