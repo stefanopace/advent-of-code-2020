@@ -4,8 +4,8 @@ defmodule Day8.Part2 do
 
 	@doc """
 	## Examples
-		# iex> Input.read(8) |> Day8.Part2.solve
-		# 1543
+		iex> Input.read(8) |> Day8.Part2.solve
+		1543
 	"""
 	def solve(input) do
 		input
@@ -16,7 +16,7 @@ defmodule Day8.Part2 do
 	defp traverse(program, %{cur: cur, acc: acc, fixed: fixed}) do
 		case length(program) do
 			^cur -> acc
-			_ -> case program |> Part1.instruction_at(cur) do
+			_ -> case program |> Enum.at(cur) do
 					%{visited: true} -> :wrong_path
 					%{instruction: cmd, value: val} ->
 						traverse(Part1.mark_as_visited(program, cur), next_state(cmd, val, cur, acc, fixed))
