@@ -14,7 +14,7 @@ defmodule Day20 do
 		|> pick_one_tile
 		|> connect_other_tiles
 		|> filter_only_corners_id
-		|> Enum.reduce(&(&1 * &2))
+		|> Enum.reduce(&Kernel.*/2)
 	end
 
 	@doc """
