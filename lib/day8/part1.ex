@@ -8,28 +8,36 @@ defmodule Day8.Part1 do
 	def solve(input) do
 		input
 		|> Enum.map(&decode_instruction/1)
-		|> find_loop(%{cursor: 0, acc: 0})
+		|> find_loop(%{cursor: 0, accumulator: 0})
 	end
 
-	defp find_loop(program, %{cursor: cursor, acc: acc}) do
+	defp find_loop(program, state = %{cursor: cursor, accumulator: acc}) do
 		case program |> instruction_at(cursor) do
 			%{visited: true} -> acc
-			%{instruction: :jmp, value: val} -> 
+			%{instruction: :jmp, value: distance} -> 
 				find_loop(
 					program |> mark_as_visited(cursor), 
-					%{cursor: cursor + val, acc: acc}
+					state |> move_cursor(distance)
 				)
-			%{instruction: :acc, value: val} -> 
+			%{instruction: :acc, value: increment} -> 
 				find_loop(
 					program |> mark_as_visited(cursor), 
-					%{cursor: cursor + 1, acc: acc + val}
+					state |> add_to_accumulator(increment) |> move_cursor(1)
 				)
 			%{instruction: :nop} -> 
 				find_loop(
 					program |> mark_as_visited(cursor), 
-					%{cursor: cursor + 1, acc: acc}
+					state |> move_cursor(1)
 				)
 		end
+	end
+
+	defp move_cursor(state, distance) do
+		state |> Map.update!(:cursor, &(&1 + distance))
+	end
+
+	defp add_to_accumulator(state, increment) do
+		state |> Map.update!(:accumulator, &(&1 + increment))
 	end
 
 	def decode_instruction(encoded) do
