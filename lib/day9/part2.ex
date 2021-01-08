@@ -7,7 +7,7 @@ defmodule Day9.Part2 do
 		62
 
 		# test too slow
-		# iex> {25, Input.read(9)} |> Day9.Part2.solve
+		# iex> {25, Input.read("./lib/day9/input")} |> Day9.Part2.solve
 		# 3340942
 	"""
 	def solve({preamble_length, input}) do
@@ -15,7 +15,7 @@ defmodule Day9.Part2 do
 			input
 			|> Enum.map(fn strnum -> Integer.parse(strnum) |> elem(0) end)
 		
-		invalid = Part1.find_wrong(numbers, preamble_length)
+		invalid = Part1.find_wrong_number(numbers, preamble_length)
 
 		find_weak_sequence(numbers, invalid, [])
 		|> Enum.min_max
