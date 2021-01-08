@@ -10,10 +10,10 @@ defmodule Day8.Part2 do
 	def solve(input) do
 		input
 		|> Enum.map(&Part1.decode_instruction/1)
-		|> generate_programs_with_swapped_instruction
+		|> generate_programs_with_swapped_instructions
 		|> Stream.map(&execute_program/1)
 		|> Enum.find(&program_terminated?/1)
-		|> (fn ({:terminated, %{accumulator: accumulator}}) -> accumulator end).()
+		|> elem(1) |> Map.get(:accumulator)
 	end
 
 	defp execute_program(initial_state) do
@@ -35,7 +35,7 @@ defmodule Day8.Part2 do
 	defp program_terminated?({:terminated, _state}), do: true
 	defp program_terminated?(_), do: false
 
-	defp generate_programs_with_swapped_instruction(instructions) do
+	defp generate_programs_with_swapped_instructions(instructions) do
 		instructions
 		|> Stream.with_index
 		|> Stream.filter(fn 
