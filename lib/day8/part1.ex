@@ -2,7 +2,7 @@ defmodule Day8.Part1 do
 
 	@doc """
 	## Examples
-		iex> Input.read(8) |> Day8.Part1.solve
+		iex> Input.read("./lib/day8/input") |> Day8.Part1.solve
 		1600
 	"""
 	def solve(input) do
