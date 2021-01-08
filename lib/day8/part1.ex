@@ -18,14 +18,14 @@ defmodule Day8.Part1 do
 
 	def execute_instruction(%{instructions: instructions, cursor: cursor, accumulator: accumulator} = state) do
 		case instructions |> Enum.at(cursor) do
-			%{instruction: :nop} -> %{state | cursor: cursor + 1}
-			%{instruction: :jmp, value: distance} -> 
+			%{command: :nop} -> %{state | cursor: cursor + 1}
+			%{command: :jmp, value: distance} -> 
 				%{
 					instructions: instructions |> mark_as_visited(cursor),
 					cursor: cursor + distance,
 					accumulator: accumulator
 				}
-			%{instruction: :acc, value: increment} -> 
+			%{command: :acc, value: increment} -> 
 				%{
 					instructions: instructions |> mark_as_visited(cursor),
 					cursor: cursor + 1,
@@ -37,7 +37,7 @@ defmodule Day8.Part1 do
 	def decode_instruction(encoded) do
 		[cmd, num] = String.split(encoded)
 		%{
-			instruction: String.to_atom(cmd), 
+			command: String.to_atom(cmd), 
 			value: String.to_integer(num), 
 			visited: false
 		} 
@@ -48,7 +48,7 @@ defmodule Day8.Part1 do
 	end
 
 	def mark_as_visited(instructions, index) do
-		instructions |> List.replace_at(index, %{instruction: nil, value: nil, visited: true})
+		instructions |> List.replace_at(index, %{command: nil, value: nil, visited: true})
 	end
 
 end

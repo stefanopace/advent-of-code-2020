@@ -39,9 +39,9 @@ defmodule Day8.Part2 do
 		instructions
 		|> Stream.with_index
 		|> Stream.filter(fn 
-			{%{instruction: :jmp}, _index} -> true
-			{%{instruction: :nop}, _index} -> true
-			______________________________ -> false
+			{%{command: :jmp}, _index} -> true
+			{%{command: :nop}, _index} -> true
+			__________________________ -> false
 		end)
 		|> Stream.map(fn {_, index} -> instructions |> List.update_at(index, &swap_jmp_and_nop/1) end)
 		|> Stream.map(fn instructions ->
@@ -53,7 +53,7 @@ defmodule Day8.Part2 do
 		end)
 	end
 
-	defp swap_jmp_and_nop(%{instruction: :jmp} = command), do: %{command | instruction: :nop}
-	defp swap_jmp_and_nop(%{instruction: :nop} = command), do: %{command | instruction: :jmp}
+	defp swap_jmp_and_nop(%{command: :jmp} = instruction), do: %{instruction | command: :nop}
+	defp swap_jmp_and_nop(%{command: :nop} = instruction), do: %{instruction | command: :jmp}
 
 end
