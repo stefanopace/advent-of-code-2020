@@ -8,51 +8,52 @@ defmodule Day8.Part2 do
 		1543
 	"""
 	def solve(input) do
-		%{
-			instructions: input |> Enum.map(&Part1.decode_instruction/1),
-			cursor: 0,
-			accumulator: 0,
-			already_swapped: false
-		}
-		|> traverse
+		input
+		|> Enum.map(&Part1.decode_instruction/1)
+		|> all_possible_programs
+		|> Stream.map(&execute_program/1)
+		|> Enum.find(&program_terminated?/1)
+		|> (fn ({:terminated, %{accumulator: accumulator}}) -> accumulator end).()
 	end
 
-	defp traverse(%{instructions: program, cursor: cur, accumulator: acc, already_swapped: already_swapped}) do
-		case length(program) do
-			^cur -> acc
-			_ -> case program |> Enum.at(cur) do
-					%{visited: true} -> :wrong_path
-					%{instruction: cmd, value: val} ->
-						traverse(
-							
-								next_state(cmd, val, cur, acc, already_swapped, Part1.mark_as_visited(program, cur))
-							
-						)
-						|> case do
-							result when cmd == :acc -> result
-							:wrong_path when not already_swapped -> traverse(swap_instructions(cmd, val, cur, acc, true, Part1.mark_as_visited(program, cur)))
-							result -> result
-						end
-				end
-		end
+	defp execute_program(initial_state) do
+		initial_state
+		|> Stream.iterate(&Part1.execute_instruction/1)
+		|> Enum.find_value(fn state ->
+			cond do
+				state |> is_cursor_after_last_instruction? -> {:terminated, state}
+				state |> Part1.already_visited_instruction? -> {:infinite_loop, state}
+				true -> false
+			end
+		end)
 	end
 
-	defp next_state(cmd, val, cur, acc, already_swapped, instructions) do
-		%{
-			cursor: cur + (if cmd == :jmp, do: val, else: 1), 
-			accumulator: acc + (if cmd == :acc, do: val, else: 0),
-			already_swapped: already_swapped,
-			instructions: instructions
-		}
+	defp is_cursor_after_last_instruction?(%{instructions: instructions, cursor: cursor}) do
+		length(instructions) == cursor
 	end
 
-	defp swap_instructions(cmd, val, cur, acc, already_swapped, instructions) do
-		%{
-			cursor: cur + (if cmd == :jmp, do: 1, else: val), 
-			accumulator: acc, 
-			already_swapped: already_swapped,
-			instructions: instructions
-		}
+	defp program_terminated?({:terminated, _state}), do: true
+	defp program_terminated?(_), do: false
+
+	defp all_possible_programs(instructions) do
+		instructions
+		|> Stream.with_index
+		|> Stream.filter(fn 
+			{%{instruction: :jmp}, _index} -> true
+			{%{instruction: :nop}, _index} -> true
+			______________________________ -> false
+		end)
+		|> Stream.map(fn {_, index} -> instructions |> List.update_at(index, &swap_jmp_and_nop/1) end)
+		|> Stream.map(fn instructions ->
+			%{
+				instructions: instructions,
+				cursor: 0,
+				accumulator: 0
+			}
+		end)
 	end
+
+	defp swap_jmp_and_nop(%{instruction: :jmp} = command), do: %{command | instruction: :nop}
+	defp swap_jmp_and_nop(%{instruction: :nop} = command), do: %{command | instruction: :jmp}
 
 end

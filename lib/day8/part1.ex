@@ -12,11 +12,11 @@ defmodule Day8.Part1 do
 			accumulator: 0
 		}
 		|> Stream.iterate(&execute_instruction/1)
-		|> Enum.find(&already_visited_instruction/1)
+		|> Enum.find(&already_visited_instruction?/1)
 		|> Map.get(:accumulator)
 	end
 
-	defp execute_instruction(%{instructions: instructions, cursor: cursor, accumulator: accumulator} = state) do
+	def execute_instruction(%{instructions: instructions, cursor: cursor, accumulator: accumulator} = state) do
 		case instructions |> Enum.at(cursor) do
 			%{instruction: :nop} -> %{state | cursor: cursor + 1}
 			%{instruction: :jmp, value: distance} -> 
@@ -43,7 +43,7 @@ defmodule Day8.Part1 do
 		} 
 	end
 
-	defp already_visited_instruction(%{instructions: instructions, cursor: cursor}) do
+	def already_visited_instruction?(%{instructions: instructions, cursor: cursor}) do
 		instructions |> Enum.at(cursor) |> Map.get(:visited)
 	end
 
